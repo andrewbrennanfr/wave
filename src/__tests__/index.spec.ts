@@ -254,7 +254,7 @@ describe('error', () => {
     })
 })
 
-describe('list', () => {
+describe('get', () => {
     const makeModule = () =>
         wave<string, string>(
             {
