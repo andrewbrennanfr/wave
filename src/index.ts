@@ -70,158 +70,156 @@ export default <D, P>(
 
     return {
         add: (data) => {
-            if (requests.add) {
-                state.items = addItems(state.items, [
-                    [getDataKey(data), makeItem({ data, status: 'adding' })],
-                ])
+            if (!requests.add) return
 
-                requests
-                    .add(data)
-                    .then((newData) => {
-                        state.items = addItems(
-                            removeItems(state.items, [getDataKey(data)]),
-                            [[getDataKey(newData), makeItem({ data: newData })]]
-                        )
-                    })
-                    .catch((error) => {
-                        state.items = addItems(
-                            removeItems(state.items, [getDataKey(data)]),
+            state.items = addItems(state.items, [
+                [getDataKey(data), makeItem({ data, status: 'adding' })],
+            ])
+
+            requests
+                .add(data)
+                .then((newData) => {
+                    state.items = addItems(
+                        removeItems(state.items, [getDataKey(data)]),
+                        [[getDataKey(newData), makeItem({ data: newData })]]
+                    )
+                })
+                .catch((error) => {
+                    state.items = addItems(
+                        removeItems(state.items, [getDataKey(data)]),
+                        [
                             [
-                                [
-                                    getDataKey(data),
-                                    makeItem({ data, status: Error(error) }),
-                                ],
-                            ]
-                        )
-                    })
-            }
+                                getDataKey(data),
+                                makeItem({ data, status: Error(error) }),
+                            ],
+                        ]
+                    )
+                })
         },
         edit: (oldData, newData) => {
-            if (requests.edit) {
-                state.items = addItems(
-                    removeItems(state.items, [getDataKey(oldData)]),
-                    [
-                        [
-                            getDataKey(newData),
-                            makeItem({ data: newData, status: 'editing' }),
-                        ],
-                    ]
-                )
+            if (!requests.edit) return
 
-                requests
-                    .edit(oldData, newData)
-                    .then((newestData) => {
-                        state.items = addItems(
-                            removeItems(state.items, [getDataKey(newData)]),
+            state.items = addItems(
+                removeItems(state.items, [getDataKey(oldData)]),
+                [
+                    [
+                        getDataKey(newData),
+                        makeItem({ data: newData, status: 'editing' }),
+                    ],
+                ]
+            )
+
+            requests
+                .edit(oldData, newData)
+                .then((newestData) => {
+                    state.items = addItems(
+                        removeItems(state.items, [getDataKey(newData)]),
+                        [
                             [
-                                [
-                                    getDataKey(newestData),
-                                    makeItem({ data: newestData }),
-                                ],
-                            ]
-                        )
-                    })
-                    .catch((error) => {
-                        state.items = addItems(
-                            removeItems(state.items, [getDataKey(newData)]),
+                                getDataKey(newestData),
+                                makeItem({ data: newestData }),
+                            ],
+                        ]
+                    )
+                })
+                .catch((error) => {
+                    state.items = addItems(
+                        removeItems(state.items, [getDataKey(newData)]),
+                        [
                             [
-                                [
-                                    getDataKey(newData),
-                                    makeItem({
-                                        data: newData,
-                                        status: Error(error),
-                                    }),
-                                ],
-                            ]
-                        )
-                    })
-            }
+                                getDataKey(newData),
+                                makeItem({
+                                    data: newData,
+                                    status: Error(error),
+                                }),
+                            ],
+                        ]
+                    )
+                })
         },
         fetch: (params) => {
-            if (requests.fetch) {
-                state.status = addStatus(
-                    state.status,
-                    getParamsKey(params),
-                    'fetching'
-                )
+            if (!requests.fetch) return
 
-                requests
-                    .fetch(params)
-                    .then((datas) => {
-                        state.items = addItems(
-                            state.items,
-                            Object.entries(makeItems(datas))
-                        )
+            state.status = addStatus(
+                state.status,
+                getParamsKey(params),
+                'fetching'
+            )
 
-                        state.status = addStatus(
-                            state.status,
-                            getParamsKey(params),
-                            'fetched'
-                        )
-                    })
-                    .catch((error) => {
-                        state.status = addStatus(
-                            state.status,
-                            getParamsKey(params),
-                            Error(error)
-                        )
-                    })
-            }
+            requests
+                .fetch(params)
+                .then((datas) => {
+                    state.items = addItems(
+                        state.items,
+                        Object.entries(makeItems(datas))
+                    )
+
+                    state.status = addStatus(
+                        state.status,
+                        getParamsKey(params),
+                        'fetched'
+                    )
+                })
+                .catch((error) => {
+                    state.status = addStatus(
+                        state.status,
+                        getParamsKey(params),
+                        Error(error)
+                    )
+                })
         },
         refetch: (params) => {
-            if (requests.refetch) {
-                state.status = addStatus(
-                    state.status,
-                    getParamsKey(params),
-                    'refetching'
-                )
+            if (!requests.refetch) return
 
-                requests
-                    .refetch(params)
-                    .then((datas) => {
-                        state.items = makeItems(datas)
+            state.status = addStatus(
+                state.status,
+                getParamsKey(params),
+                'refetching'
+            )
 
-                        state.status = addStatus(
-                            state.status,
-                            getParamsKey(params),
-                            'refetched'
-                        )
-                    })
-                    .catch((error) => {
-                        state.status = addStatus(
-                            state.status,
-                            getParamsKey(params),
-                            Error(error)
-                        )
-                    })
-            }
+            requests
+                .refetch(params)
+                .then((datas) => {
+                    state.items = makeItems(datas)
+
+                    state.status = addStatus(
+                        state.status,
+                        getParamsKey(params),
+                        'refetched'
+                    )
+                })
+                .catch((error) => {
+                    state.status = addStatus(
+                        state.status,
+                        getParamsKey(params),
+                        Error(error)
+                    )
+                })
         },
         remove: (data) => {
-            if (requests.remove) {
-                state.items = addItems(
-                    removeItems(state.items, [getDataKey(data)]),
-                    [[getDataKey(data), makeItem({ data, status: 'removing' })]]
-                )
+            if (!requests.remove) return
 
-                requests
-                    .remove(data)
-                    .then(() => {
-                        state.items = removeItems(state.items, [
-                            getDataKey(data),
-                        ])
-                    })
-                    .catch((error) => {
-                        state.items = addItems(
-                            removeItems(state.items, [getDataKey(data)]),
+            state.items = addItems(
+                removeItems(state.items, [getDataKey(data)]),
+                [[getDataKey(data), makeItem({ data, status: 'removing' })]]
+            )
+
+            requests
+                .remove(data)
+                .then(() => {
+                    state.items = removeItems(state.items, [getDataKey(data)])
+                })
+                .catch((error) => {
+                    state.items = addItems(
+                        removeItems(state.items, [getDataKey(data)]),
+                        [
                             [
-                                [
-                                    getDataKey(data),
-                                    makeItem({ data, status: Error(error) }),
-                                ],
-                            ]
-                        )
-                    })
-            }
+                                getDataKey(data),
+                                makeItem({ data, status: Error(error) }),
+                            ],
+                        ]
+                    )
+                })
         },
 
         list: (fn) =>
