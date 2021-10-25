@@ -253,3 +253,62 @@ describe('error', () => {
         })
     })
 })
+
+describe('get', () => {
+    const makeModule = () =>
+        wave<string, string>(
+            {
+                getDataKey: (data) => data,
+                getParamsKey: (data) => data,
+            },
+            { add: (data) => Promise.resolve(`added ${data}`) }
+        )
+
+    test('grouped', async () => {
+        const module = makeModule()
+
+        module.add('wave')
+
+        await flushPromises()
+
+        module.add('tsunami')
+
+        await flushPromises()
+
+        module.add('tide')
+
+        await flushPromises()
+
+        expect(module.getItemsGroupedBy((item) => item.data.slice(-1))).toEqual(
+            {
+                e: [
+                    { data: 'added wave', status: null },
+                    { data: 'added tide', status: null },
+                ],
+                i: [{ data: 'added tsunami', status: null }],
+            }
+        )
+    })
+
+    test('sorted', async () => {
+        const module = makeModule()
+
+        module.add('wave')
+
+        await flushPromises()
+
+        module.add('tsunami')
+
+        await flushPromises()
+
+        module.add('tide')
+
+        await flushPromises()
+
+        expect(module.getItemsSortedBy((item) => item.data.slice(-4))).toEqual([
+            { data: 'added tsunami', status: null },
+            { data: 'added tide', status: null },
+            { data: 'added wave', status: null },
+        ])
+    })
+})
