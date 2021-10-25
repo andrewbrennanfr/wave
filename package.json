@@ -1,0 +1,8 @@
+{
+    "name": "wave",
+    "version": "0.1.0",
+    "main": "index.js",
+    "repository": "git@github.com:andrewbrennanfr/wave.git",
+    "author": "andrewbrennanfr <20241062+andrewbrennanfr@users.noreply.github.com>",
+    "license": "MIT"
+}
