@@ -18,12 +18,7 @@ export type Module<D, P> = {
     refetch: (params: P) => void
     remove: (data: D) => void
 
-    getItemsGroupedBy: (
-        fn: (item: Item<D>) => string
-    ) => Record<string, Array<Item<D>>>
-
-    getItemsSortedBy: (fn: (item: Item<D>) => number | string) => Array<Item<D>>
-
+    list: (fn: (item: Item<D>) => number | string) => Array<Item<D>>
     state: State<D>
 }
 
@@ -229,16 +224,7 @@ export default <D, P>(
             }
         },
 
-        getItemsGroupedBy: (fn) =>
-            Object.values(state.items).reduce<Record<string, Array<Item<D>>>>(
-                (groupedBy, item) => ({
-                    ...groupedBy,
-                    [fn(item)]: [...(groupedBy[fn(item)] || []), item],
-                }),
-                {}
-            ),
-
-        getItemsSortedBy: (fn) =>
+        list: (fn) =>
             Object.values(state.items).sort((itemA, itemB) =>
                 fn(itemA) > fn(itemB) ? 1 : fn(itemA) < fn(itemB) ? -1 : 0
             ),
