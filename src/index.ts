@@ -44,6 +44,13 @@ export default <D, P>(
     const state = makeState<D>()
 
     return {
+        //----------------------------------------------------------------------
+
+        state,
+        list: (comparator) => sortItems(comparator, state.items),
+
+        //----------------------------------------------------------------------
+
         add: (data) => {
             if (!requests.add) return
 
@@ -72,6 +79,9 @@ export default <D, P>(
                     )
                 })
         },
+
+        //----------------------------------------------------------------------
+
         edit: (oldData, newData) => {
             if (!requests.edit) return
 
@@ -113,6 +123,9 @@ export default <D, P>(
                     )
                 })
         },
+
+        //----------------------------------------------------------------------
+
         fetch: (params) => {
             if (!requests.fetch) return
 
@@ -141,6 +154,9 @@ export default <D, P>(
                     )
                 })
         },
+
+        //----------------------------------------------------------------------
+
         refetch: (params) => {
             if (!requests.refetch) return
 
@@ -166,6 +182,9 @@ export default <D, P>(
                     )
                 })
         },
+
+        //----------------------------------------------------------------------
+
         remove: (data) => {
             if (!requests.remove) return
 
@@ -192,7 +211,6 @@ export default <D, P>(
                 })
         },
 
-        list: (comparator) => sortItems(comparator, state.items),
-        state,
+        //----------------------------------------------------------------------
     }
 }
