@@ -178,7 +178,7 @@ export default <D, P>(
                 state.status = addStatus(
                     state.status,
                     getParamsKey(params),
-                    'fetching'
+                    'refetching'
                 )
 
                 requests
