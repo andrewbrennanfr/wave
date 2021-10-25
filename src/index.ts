@@ -40,7 +40,7 @@ export default <D, P>(
         edit: (oldData: D, newData: D) => Promise<D>
         fetch: (params: P) => Promise<Array<D>>
         refetch: (params: P) => Promise<Array<D>>
-        remove: (data: D) => Promise<D>
+        remove: (data: D) => Promise<void>
     }>
 ): Module<D, P> => {
     const state: State<D> = { items: {}, status: {} }
