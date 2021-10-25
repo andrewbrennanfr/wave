@@ -240,7 +240,7 @@ export default <D, P>(
 
         getItemsSortedBy: (fn) =>
             Object.values(state.items).sort((itemA, itemB) =>
-                fn(itemA) > fn(itemB) ? 1 : fn(itemA) > fn(itemB) ? -1 : 0
+                fn(itemA) > fn(itemB) ? 1 : fn(itemA) < fn(itemB) ? -1 : 0
             ),
 
         state,
