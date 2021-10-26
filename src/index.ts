@@ -7,20 +7,16 @@ import {
     removeItems,
     sortItems,
 } from './tools'
-import {
-    FetchStatus as _FetchStatus,
+import type {
     Item as _Item,
     Items as _Items,
-    ItemStatus as _ItemStatus,
     Module as _Module,
     State as _State,
     Status as _Status,
 } from './types'
 
-export type FetchStatus = _FetchStatus
 export type Item<D> = _Item<D>
 export type Items<D> = _Items<D>
-export type ItemStatus = _ItemStatus
 export type Module<D, P> = _Module<D, P>
 export type State<D> = _State<D>
 export type Status = _Status

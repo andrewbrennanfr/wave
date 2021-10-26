@@ -1,4 +1,4 @@
-import { FetchStatus, Item, Items, State, Status } from './types'
+import type { Item, Items, State, Status } from './types'
 
 export const makeState = <D>(): State<D> => ({ items: {}, status: {} })
 
@@ -40,6 +40,6 @@ export const sortItems = <D>(
     )
 
 export const addStatuses = (
-    entries: Array<[string, FetchStatus]>,
+    entries: Array<[string, Status[string]]>,
     status: Status
 ): Status => ({ ...status, ...Object.fromEntries(entries) })
