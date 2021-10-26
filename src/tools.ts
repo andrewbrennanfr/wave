@@ -2,16 +2,18 @@ import type { Item, Items, State, Status } from './types'
 
 export const makeState = <D>(): State<D> => ({ items: {}, status: {} })
 
-export const makeItem = <D>(
+export const makeItemFromData = <D>(data: D) => ({ data, status: null })
+
+export const makeItemFromPartial = <D>(
     partial: Partial<Item<D>> & Pick<Item<D>, 'data'>
-): Item<D> => ({ status: null, ...partial })
+): Item<D> => ({ ...makeItemFromData(partial.data), ...partial })
 
 export const makeItems = <D>(
     getDataKey: (data: D) => string,
     datas: Array<D>
 ): Items<D> =>
     Object.fromEntries(
-        datas.map((data) => [getDataKey(data), makeItem({ data })])
+        datas.map((data) => [getDataKey(data), makeItemFromData(data)])
     )
 
 export const addItems = <D>(

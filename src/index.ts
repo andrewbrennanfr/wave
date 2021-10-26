@@ -1,7 +1,8 @@
 import {
     addItems,
     addStatuses,
-    makeItem,
+    makeItemFromData,
+    makeItemFromPartial,
     makeItems,
     makeState,
     removeItems,
@@ -51,7 +52,12 @@ export default <D, P>(
             if (!requests.add) return
 
             state.items = addItems(
-                [[getDataKey(data), makeItem({ data, status: 'adding' })]],
+                [
+                    [
+                        getDataKey(data),
+                        makeItemFromPartial({ data, status: 'adding' }),
+                    ],
+                ],
                 state.items
             )
 
@@ -59,7 +65,7 @@ export default <D, P>(
                 .add(data)
                 .then((newData) => {
                     state.items = addItems(
-                        [[getDataKey(newData), makeItem({ data: newData })]],
+                        [[getDataKey(newData), makeItemFromData(newData)]],
                         removeItems([getDataKey(data)], state.items)
                     )
                 })
@@ -68,7 +74,10 @@ export default <D, P>(
                         [
                             [
                                 getDataKey(data),
-                                makeItem({ data, status: Error(error) }),
+                                makeItemFromPartial({
+                                    data,
+                                    status: Error(error),
+                                }),
                             ],
                         ],
                         removeItems([getDataKey(data)], state.items)
@@ -85,7 +94,10 @@ export default <D, P>(
                 [
                     [
                         getDataKey(newData),
-                        makeItem({ data: newData, status: 'editing' }),
+                        makeItemFromPartial({
+                            data: newData,
+                            status: 'editing',
+                        }),
                     ],
                 ],
                 removeItems([getDataKey(oldData)], state.items)
@@ -98,7 +110,7 @@ export default <D, P>(
                         [
                             [
                                 getDataKey(newestData),
-                                makeItem({ data: newestData }),
+                                makeItemFromData(newestData),
                             ],
                         ],
                         removeItems([getDataKey(newData)], state.items)
@@ -109,7 +121,7 @@ export default <D, P>(
                         [
                             [
                                 getDataKey(newData),
-                                makeItem({
+                                makeItemFromPartial({
                                     data: newData,
                                     status: Error(error),
                                 }),
@@ -185,7 +197,12 @@ export default <D, P>(
             if (!requests.remove) return
 
             state.items = addItems(
-                [[getDataKey(data), makeItem({ data, status: 'removing' })]],
+                [
+                    [
+                        getDataKey(data),
+                        makeItemFromPartial({ data, status: 'removing' }),
+                    ],
+                ],
                 removeItems([getDataKey(data)], state.items)
             )
 
@@ -199,7 +216,10 @@ export default <D, P>(
                         [
                             [
                                 getDataKey(data),
-                                makeItem({ data, status: Error(error) }),
+                                makeItemFromPartial({
+                                    data,
+                                    status: Error(error),
+                                }),
                             ],
                         ],
                         removeItems([getDataKey(data)], state.items)
