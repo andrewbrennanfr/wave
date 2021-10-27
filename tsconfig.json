@@ -1,6 +1,10 @@
 {
     "compilerOptions": {
+        "declaration": true,
+        "target": "es5",
         "lib": ["es2019"],
-        "strictNullChecks": true
-    }
+        "strict": true
+    },
+    "include": ["src/**/*"],
+    "exclude": ["src/**/*.spec.ts"]
 }

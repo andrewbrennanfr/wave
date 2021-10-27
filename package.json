@@ -1,7 +1,16 @@
 {
     "name": "wave",
     "version": "0.1.0",
+    "source": "src/index.ts",
+    "main": "./dist/index.js",
+    "module": "./dist/index.module.js",
+    "exports": {
+        "require": "./dist/index.js",
+        "default": "./dist/index.modern.js"
+    },
+    "types": "dist/index.d.ts",
     "scripts": {
+        "build": "rm -Rf dist/ && microbundle",
         "test": "jest --watch --verbose"
     },
     "repository": "git@github.com:andrewbrennanfr/wave.git",
@@ -13,6 +22,7 @@
         "@babel/preset-typescript": "^7.15.0",
         "@types/jest": "^27.0.2",
         "babel-jest": "^27.3.1",
-        "jest": "^27.3.1"
+        "jest": "^27.3.1",
+        "microbundle": "^0.14.1"
     }
 }
