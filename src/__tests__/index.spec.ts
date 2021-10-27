@@ -26,14 +26,14 @@ describe('success', () => {
 
         expect(module.state).toEqual({
             items: { w: { data: 'wave', status: 'adding' } },
-            status: {},
+            fetches: {},
         })
 
         await flushPromises()
 
         expect(module.state).toEqual({
             items: { a: { data: 'added wave', status: null } },
-            status: {},
+            fetches: {},
         })
     })
 
@@ -48,14 +48,14 @@ describe('success', () => {
 
         expect(module.state).toEqual({
             items: { t: { data: 'tsunami', status: 'editing' } },
-            status: {},
+            fetches: {},
         })
 
         await flushPromises()
 
         expect(module.state).toEqual({
             items: { e: { data: 'edited tsunami', status: null } },
-            status: {},
+            fetches: {},
         })
     })
 
@@ -70,7 +70,7 @@ describe('success', () => {
 
         expect(module.state).toEqual({
             items: { a: { data: 'added wave', status: null } },
-            status: { i: 'fetching' },
+            fetches: { i: { params: 'tsunami', status: 'fetching' } },
         })
 
         await flushPromises()
@@ -80,7 +80,7 @@ describe('success', () => {
                 a: { data: 'added wave', status: null },
                 f: { data: 'fetched tsunami', status: null },
             },
-            status: { i: 'fetched' },
+            fetches: { i: { params: 'tsunami', status: 'fetched' } },
         })
     })
 
@@ -95,7 +95,7 @@ describe('success', () => {
 
         expect(module.state).toEqual({
             items: { a: { data: 'added wave', status: null } },
-            status: { i: 'refetching' },
+            fetches: { i: { params: 'tsunami', status: 'refetching' } },
         })
 
         await flushPromises()
@@ -104,7 +104,7 @@ describe('success', () => {
             items: {
                 r: { data: 'refetched tsunami', status: null },
             },
-            status: { i: 'refetched' },
+            fetches: { i: { params: 'tsunami', status: 'refetched' } },
         })
     })
 
@@ -119,14 +119,14 @@ describe('success', () => {
 
         expect(module.state).toEqual({
             items: { a: { data: 'added wave', status: 'removing' } },
-            status: {},
+            fetches: {},
         })
 
         await flushPromises()
 
         expect(module.state).toEqual({
             items: {},
-            status: {},
+            fetches: {},
         })
     })
 })
@@ -154,14 +154,14 @@ describe('error', () => {
 
         expect(module.state).toEqual({
             items: { w: { data: 'wave', status: 'adding' } },
-            status: {},
+            fetches: {},
         })
 
         await flushPromises()
 
         expect(module.state).toEqual({
             items: { w: { data: 'wave', status: Error('added wave') } },
-            status: {},
+            fetches: {},
         })
     })
 
@@ -176,14 +176,14 @@ describe('error', () => {
 
         expect(module.state).toEqual({
             items: { t: { data: 'tsunami', status: 'editing' } },
-            status: {},
+            fetches: {},
         })
 
         await flushPromises()
 
         expect(module.state).toEqual({
             items: { t: { data: 'tsunami', status: Error('edited tsunami') } },
-            status: {},
+            fetches: {},
         })
     })
 
@@ -198,14 +198,16 @@ describe('error', () => {
 
         expect(module.state).toEqual({
             items: { w: { data: 'wave', status: Error('added wave') } },
-            status: { i: 'fetching' },
+            fetches: { i: { params: 'tsunami', status: 'fetching' } },
         })
 
         await flushPromises()
 
         expect(module.state).toEqual({
             items: { w: { data: 'wave', status: Error('added wave') } },
-            status: { i: Error('fetched tsunami') },
+            fetches: {
+                i: { params: 'tsunami', status: Error('fetched tsunami') },
+            },
         })
     })
 
@@ -220,14 +222,16 @@ describe('error', () => {
 
         expect(module.state).toEqual({
             items: { w: { data: 'wave', status: Error('added wave') } },
-            status: { i: 'refetching' },
+            fetches: { i: { params: 'tsunami', status: 'refetching' } },
         })
 
         await flushPromises()
 
         expect(module.state).toEqual({
             items: { w: { data: 'wave', status: Error('added wave') } },
-            status: { i: Error('refetched tsunami') },
+            fetches: {
+                i: { params: 'tsunami', status: Error('refetched tsunami') },
+            },
         })
     })
 
@@ -242,14 +246,14 @@ describe('error', () => {
 
         expect(module.state).toEqual({
             items: { w: { data: 'wave', status: 'removing' } },
-            status: {},
+            fetches: {},
         })
 
         await flushPromises()
 
         expect(module.state).toEqual({
             items: { w: { data: 'wave', status: Error('removed wave') } },
-            status: {},
+            fetches: {},
         })
     })
 })
