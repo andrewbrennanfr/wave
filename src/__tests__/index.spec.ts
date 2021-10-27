@@ -258,7 +258,7 @@ describe('error', () => {
     })
 })
 
-describe('get', () => {
+describe('tools', () => {
     const makeModule = () =>
         wave<string, string>(
             {
@@ -268,7 +268,7 @@ describe('get', () => {
             { add: (data) => Promise.resolve(`added ${data}`) }
         )
 
-    test('list', async () => {
+    test('sort', async () => {
         const module = makeModule()
 
         module.add('wave')
@@ -283,7 +283,9 @@ describe('get', () => {
 
         await flushPromises()
 
-        expect(module.list((item) => item.data.slice(-4))).toEqual([
+        expect(
+            module.sortItems(module.state.items, (item) => item.data.slice(-4))
+        ).toEqual([
             { data: 'added tsunami', status: null },
             { data: 'added tide', status: null },
             { data: 'added wave', status: null },

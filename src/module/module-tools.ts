@@ -44,7 +44,7 @@ export const makeModule = <D, P>(
 
     return {
         state,
-        list: (comparator) => sortItems(state.items, comparator),
+        sortItems,
 
         add: (data) => {
             if (!requests.add) return
