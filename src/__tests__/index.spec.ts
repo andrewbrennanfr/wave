@@ -30,10 +30,10 @@ describe('success', () => {
 
         await flushPromises()
 
-        // expect(module.state).toEqual({
-        //     items: { a: { data: 'added wave', status: null } },
-        //     statuses: {},
-        // })
+        expect(module.state).toEqual({
+            items: { a: { data: 'added wave', status: null } },
+            statuses: {},
+        })
     })
 
     test('edit', async () => {
