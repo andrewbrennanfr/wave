@@ -1,11 +1,11 @@
 import { makeItemFromData, useItem } from '../item/item-tools'
 import type { GetDataKey } from '../item/item-types'
-import type { RefetchAction, RefetchRequest } from '../refetch/refetch-types'
 import type { State } from '../state/state-types'
 import { makeStatusFromPartial, useStatus } from '../status/status-tools'
 import type { GetParamsKey } from '../status/status-types'
+import type { RefetchAction, RefetchRequest } from './refetch-types'
 
-export const useFetch =
+export const useRefetch =
     <D, P>(
         {
             getDataKey,
@@ -22,19 +22,17 @@ export const useFetch =
 
         state.statuses = addStatus(
             state.statuses,
-            makeStatusFromPartial({ params, status: 'fetching' })
+            makeStatusFromPartial({ params, status: 'refetching' })
         )
 
         try {
             const datas = await request(params)
 
-            state.items = datas
-                .map(makeItemFromData)
-                .reduce(addItem, state.items)
+            state.items = datas.map(makeItemFromData).reduce(addItem, {})
 
             state.statuses = addStatus(
                 state.statuses,
-                makeStatusFromPartial({ params, status: 'fetched' })
+                makeStatusFromPartial({ params, status: 'refetched' })
             )
         } catch (error: any) {
             state.statuses = addStatus(

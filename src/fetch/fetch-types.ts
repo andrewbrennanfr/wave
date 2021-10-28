@@ -1,6 +1,3 @@
-export type Fetch<P> = {
-    status: 'fetched' | 'fetching' | 'refetched' | 'refetching' | Error | null
-    params: P
-}
+export type FetchAction<P> = (params: P) => void
 
-export type Fetches<P> = Partial<Record<string, Fetch<P>>>
+export type FetchRequest<D, P> = (params: P) => Promise<Array<D>>
