@@ -2,17 +2,16 @@
     "name": "wave",
     "version": "0.1.0",
     "source": "src/index.ts",
-    "main": "./dist/index.js",
-    "module": "./dist/index.module.js",
-    "exports": {
-        "require": "./dist/index.js",
-        "default": "./dist/index.modern.js"
-    },
+    "main": "dist/wave.js",
     "types": "dist/index.d.ts",
     "scripts": {
         "build": "rm -Rf dist/ && microbundle",
         "test": "jest --watch --verbose"
     },
+    "files": [
+        "dist/**/*.d.ts",
+        "dist/wave.js.map"
+    ],
     "repository": "git@github.com:andrewbrennanfr/wave.git",
     "author": "andrewbrennanfr <20241062+andrewbrennanfr@users.noreply.github.com>",
     "license": "MIT",
