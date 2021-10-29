@@ -14,7 +14,7 @@ import { makeState } from '../state/state-tools'
 import type { GetParamsKey } from '../status/status-types'
 import type { Module } from './module-types'
 
-export const makeModule = <D, P>(
+export const useModule = <D, P>(
     getKeys: { getDataKey: GetDataKey<D>; getParamsKey: GetParamsKey<P> },
     requests: Partial<{
         add: AddRequest<D>
