@@ -1,4 +1,4 @@
-import { GetParamsKey, Status, Statuses } from './status-types'
+import { GetParamsKey, PartialStatus, Status, Statuses } from './status-types'
 import { assoc, mergeRight, omit, prop } from 'ramda'
 
 export const makeStatusFromParams = <P>(params: P): Status<P> => ({
@@ -7,7 +7,7 @@ export const makeStatusFromParams = <P>(params: P): Status<P> => ({
 })
 
 export const makeStatusFromPartial = <P>(
-    partial: Pick<Status<P>, 'params'> & Partial<Omit<Status<P>, 'params'>>
+    partial: PartialStatus<P>
 ): Status<P> =>
     mergeRight(
         makeStatusFromParams(prop('params', partial)),

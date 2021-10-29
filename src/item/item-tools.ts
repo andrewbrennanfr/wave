@@ -1,12 +1,12 @@
-import { GetDataKey, Item, Items, PublicItems } from './item-types'
+import { GetDataKey, Item, Items, PartialItem, PublicItems } from './item-types'
 import {
     assoc,
     equals,
     fromPairs,
     groupBy,
+    last,
     map,
     mergeRight,
-    nth,
     omit,
     pipe,
     prop,
@@ -16,32 +16,27 @@ import {
     values,
 } from 'ramda'
 
+export const coerceToItems = <D>(items: PublicItems<D>): Items<D> =>
+    items as Items<D>
+
 export const makeItemFromData = <D>(data: D): Item<D> => ({
     data,
     status: null,
 })
 
-export const makeItemFromPartial = <D>(
-    partial: Pick<Item<D>, 'data'> & Partial<Omit<Item<D>, 'data'>>
-): Item<D> =>
+export const makeItemFromPartial = <D>(partial: PartialItem<D>): Item<D> =>
     mergeRight(makeItemFromData(prop('data', partial)), omit(['data'], partial))
 
 export const groupItems = <D>(
     grouper: (item: Item<D>) => string,
     items: PublicItems<D>
 ): Partial<Record<ReturnType<typeof grouper>, PublicItems<D>>> =>
-    map(
-        fromPairs,
-        groupBy(
-            pipe(nth(1) as (pair: [string, Item<D>]) => Item<D>, grouper),
-            toPairs(items) as Array<[string, Item<D>]>
-        )
-    )
+    map(fromPairs, groupBy(pipe(last, grouper), toPairs(coerceToItems(items))))
 
 export const sortItems = <D, P>(
     comparator: (item: Item<D>) => number | string,
     items: PublicItems<D>
-): Array<Item<D>> => sortBy(comparator, values(items) as Array<Item<D>>)
+): Array<Item<D>> => sortBy(comparator, values(coerceToItems(items)))
 
 export const useAddItem =
     <D>(getKeys: {
