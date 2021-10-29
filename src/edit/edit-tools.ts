@@ -1,39 +1,46 @@
 import {
     makeItemFromData,
     makeItemFromPartial,
-    useItem,
+    useAddItem,
+    useGetItem,
+    useRemoveItem,
 } from '../item/item-tools'
-import type { GetDataKey } from '../item/item-types'
-import type { State } from '../state/state-types'
-import type { EditAction, EditRequest } from './edit-types'
+import { GetDataKey } from '../item/item-types'
+import { State } from '../state/state-types'
+import { EditAction, EditRequest } from './edit-types'
 
 export const useEdit =
     <D, P>(
-        { getDataKey }: { getDataKey: GetDataKey<D> },
+        getKeys: { getDataKey: GetDataKey<D> },
         state: State<D, P>,
         request?: EditRequest<D>
     ): EditAction<D> =>
-    async (oldData: D, newData: D) => {
+    (oldData: D, newData: D) => {
         if (!request) return
 
-        const { addItem, getItem, removeItem } = useItem({ getDataKey })
+        const addItem = useAddItem(getKeys)
+        const getItem = useGetItem(getKeys)
+        const removeItem = useRemoveItem(getKeys)
 
         state.items = addItem(
-            removeItem(state.items, getItem(state.items, oldData)),
-            makeItemFromPartial({ data: newData, status: 'editing' })
+            makeItemFromPartial({ data: newData, status: 'editing' }),
+            removeItem(getItem(oldData, state.items), state.items)
         )
 
-        try {
-            const newestData = await request(oldData, newData)
-
-            state.items = addItem(
-                removeItem(state.items, getItem(state.items, newData)),
-                makeItemFromData(newestData)
-            )
-        } catch (error: any) {
-            state.items = addItem(
-                state.items,
-                makeItemFromPartial({ data: newData, status: Error(error) })
-            )
-        }
+        request(oldData, newData)
+            .then((newestData) => {
+                state.items = addItem(
+                    makeItemFromData(newestData),
+                    removeItem(getItem(newData, state.items), state.items)
+                )
+            })
+            .catch((error: any) => {
+                state.items = addItem(
+                    makeItemFromPartial({
+                        data: newData,
+                        status: Error(error),
+                    }),
+                    state.items
+                )
+            })
     }

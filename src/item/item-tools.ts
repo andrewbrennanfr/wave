@@ -1,75 +1,72 @@
-import type { GetDataKey, Item, Items, PublicItems } from './item-types'
+import { GetDataKey, Item, Items, PublicItems } from './item-types'
+import {
+    assoc,
+    equals,
+    fromPairs,
+    groupBy,
+    map,
+    mergeRight,
+    nth,
+    omit,
+    pipe,
+    prop,
+    reject,
+    sortBy,
+    toPairs,
+    values,
+} from 'ramda'
 
 export const makeItemFromData = <D>(data: D): Item<D> => ({
     data,
     status: null,
 })
 
-export const makeItemFromPartial = <D>({
-    data,
-    ...partial
-}: Partial<Item<D>> & Pick<Item<D>, 'data'>): Item<D> => ({
-    ...makeItemFromData(data),
-    ...partial,
-})
+export const makeItemFromPartial = <D>(
+    partial: Pick<Item<D>, 'data'> & Partial<Omit<Item<D>, 'data'>>
+): Item<D> =>
+    mergeRight(makeItemFromData(prop('data', partial)), omit(['data'], partial))
 
-export const groupItems = <D, P>(
-    items: PublicItems<D>,
-    grouper: (item: Item<D>) => string
+export const groupItems = <D>(
+    grouper: (item: Item<D>) => string,
+    items: PublicItems<D>
 ): Partial<Record<ReturnType<typeof grouper>, PublicItems<D>>> =>
-    Object.fromEntries(
-        Object.entries(
-            (
-                Object.entries(items) as Array<
-                    [ReturnType<GetDataKey<D>>, Item<D>]
-                >
-            ).reduce<
-                Record<
-                    ReturnType<typeof grouper>,
-                    Array<[ReturnType<GetDataKey<D>>, Item<D>]>
-                >
-            >(
-                (groupedEntries, [key, value]) => ({
-                    ...groupedEntries,
-                    [grouper(value)]: [
-                        ...(groupedEntries[grouper(value)] || []),
-                        [key, value],
-                    ],
-                }),
-                {}
-            )
-        ).map(([key, group]) => [key, Object.fromEntries(group)])
+    map(
+        fromPairs,
+        groupBy(
+            pipe(nth(1) as (pair: [string, Item<D>]) => Item<D>, grouper),
+            toPairs(items) as Array<[string, Item<D>]>
+        )
     )
 
 export const sortItems = <D, P>(
-    items: PublicItems<D>,
-    comparator: (item: Item<D>) => number | string
-): Array<Item<D>> =>
-    (Object.values(items) as Array<Item<D>>).sort((itemA, itemB) =>
-        comparator(itemA) > comparator(itemB)
-            ? 1
-            : comparator(itemA) < comparator(itemB)
-            ? -1
-            : 0
-    )
+    comparator: (item: Item<D>) => number | string,
+    items: PublicItems<D>
+): Array<Item<D>> => sortBy(comparator, values(items) as Array<Item<D>>)
 
-export const useItem = <D>({
-    getDataKey,
-}: {
-    getDataKey: GetDataKey<D>
-}): {
-    addItem: (items: Items<D>, item: Item<D>) => Items<D>
-    getItem: (items: Items<D>, data: D) => Item<D>
-    removeItem: (items: Items<D>, item: Item<D>) => Items<D>
-} => ({
-    addItem: (items, item) => ({ ...items, [getDataKey(item.data)]: item }),
+export const useAddItem =
+    <D>(getKeys: {
+        getDataKey: GetDataKey<D>
+    }): ((item: Item<D>, items: Items<D>) => Items<D>) =>
+    (item, items) =>
+        assoc(prop('getDataKey', getKeys)(prop('data', item)), item, items)
 
-    getItem: (items, data) => items[getDataKey(data)],
+export const useGetItem =
+    <D>(getKeys: {
+        getDataKey: GetDataKey<D>
+    }): ((data: D, items: Items<D>) => Item<D>) =>
+    (data, items) =>
+        prop(prop('getDataKey', getKeys)(data), items)
 
-    removeItem: (items, item) =>
-        Object.fromEntries(
-            Object.entries(items).filter(
-                ([_, { data }]) => getDataKey(data) !== getDataKey(item.data)
-            )
-        ),
-})
+export const useRemoveItem =
+    <D>(getKeys: {
+        getDataKey: GetDataKey<D>
+    }): ((item: Item<D>, items: Items<D>) => Items<D>) =>
+    (item, items) =>
+        reject(
+            pipe(
+                prop('data'),
+                prop('getDataKey', getKeys),
+                equals(prop('getDataKey', getKeys)(prop('data', item)))
+            ),
+            items
+        )

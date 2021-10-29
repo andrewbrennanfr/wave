@@ -1,14 +1,13 @@
 import wave from '../'
+import { Item } from '../item/item-types'
+import { head, last, nth, pipe, prop, slice, split } from 'ramda'
 
 const flushPromises = () => new Promise((resolve) => setTimeout(resolve))
 
 describe('success', () => {
     const makeModule = () =>
         wave<string, string>(
-            {
-                getDataKey: (data) => data.slice(0, 1),
-                getParamsKey: (data) => data.slice(-1),
-            },
+            { getDataKey: head, getParamsKey: last },
             {
                 add: (data) => Promise.resolve(`added ${data}`),
                 edit: (_, newData) => Promise.resolve(`edited ${newData}`),
@@ -128,10 +127,7 @@ describe('success', () => {
 describe('error', () => {
     const makeModule = () =>
         wave<string, string>(
-            {
-                getDataKey: (data) => data.slice(0, 1),
-                getParamsKey: (data) => data.slice(-1),
-            },
+            { getDataKey: head, getParamsKey: last },
             {
                 add: (data) => Promise.reject(`added ${data}`),
                 edit: (_, newData) => Promise.reject(`edited ${newData}`),
@@ -256,8 +252,8 @@ describe('tools', () => {
     const makeModule = () =>
         wave<string, string>(
             {
-                getDataKey: (data) => data.split(' ')[1],
-                getParamsKey: (data) => data.split(' ')[1],
+                getDataKey: pipe(split(' '), nth(1)),
+                getParamsKey: pipe(split(' '), nth(1)),
             },
             { add: (data) => Promise.resolve(`added ${data}`) }
         )
@@ -278,8 +274,9 @@ describe('tools', () => {
         await flushPromises()
 
         expect(
-            module.groupItems(module.state.items, (item) =>
-                item.data.slice(6, 7)
+            module.groupItems(
+                pipe<Item<string>, string, string>(prop('data'), slice(6, 7)),
+                module.state.items
             )
         ).toEqual({
             t: {
@@ -306,7 +303,13 @@ describe('tools', () => {
         await flushPromises()
 
         expect(
-            module.sortItems(module.state.items, (item) => item.data.slice(-4))
+            module.sortItems(
+                pipe<Item<string>, string, string>(
+                    prop('data'),
+                    slice(-4, Infinity)
+                ),
+                module.state.items
+            )
         ).toEqual([
             { data: 'added tsunami', status: null },
             { data: 'added tide', status: null },

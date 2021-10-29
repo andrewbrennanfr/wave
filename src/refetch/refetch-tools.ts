@@ -1,43 +1,45 @@
-import { makeItemFromData, useItem } from '../item/item-tools'
-import type { GetDataKey } from '../item/item-types'
-import type { State } from '../state/state-types'
-import { makeStatusFromPartial, useStatus } from '../status/status-tools'
-import type { GetParamsKey } from '../status/status-types'
-import type { RefetchAction, RefetchRequest } from './refetch-types'
+import { makeItemFromData, useAddItem } from '../item/item-tools'
+import { GetDataKey } from '../item/item-types'
+import { State } from '../state/state-types'
+import { makeStatusFromPartial, useAddStatus } from '../status/status-tools'
+import { GetParamsKey } from '../status/status-types'
+import { RefetchAction, RefetchRequest } from './refetch-types'
+import { map, reduceRight } from 'ramda'
 
 export const useRefetch =
     <D, P>(
-        {
-            getDataKey,
-            getParamsKey,
-        }: { getDataKey: GetDataKey<D>; getParamsKey: GetParamsKey<P> },
+        getKeys: { getDataKey: GetDataKey<D>; getParamsKey: GetParamsKey<P> },
         state: State<D, P>,
         request?: RefetchRequest<D, P>
     ): RefetchAction<P> =>
-    async (params) => {
+    (params) => {
         if (!request) return
 
-        const { addItem } = useItem({ getDataKey })
-        const { addStatus } = useStatus({ getParamsKey })
+        const addItem = useAddItem(getKeys)
+        const addStatus = useAddStatus(getKeys)
 
         state.statuses = addStatus(
-            state.statuses,
-            makeStatusFromPartial({ params, status: 'refetching' })
+            makeStatusFromPartial({ params, status: 'refetching' }),
+            state.statuses
         )
 
-        try {
-            const datas = await request(params)
+        request(params)
+            .then((datas) => {
+                state.items = reduceRight(
+                    addItem,
+                    {},
+                    map(makeItemFromData, datas)
+                )
 
-            state.items = datas.map(makeItemFromData).reduce(addItem, {})
-
-            state.statuses = addStatus(
-                state.statuses,
-                makeStatusFromPartial({ params, status: 'refetched' })
-            )
-        } catch (error: any) {
-            state.statuses = addStatus(
-                state.statuses,
-                makeStatusFromPartial({ params, status: Error(error) })
-            )
-        }
+                state.statuses = addStatus(
+                    makeStatusFromPartial({ params, status: 'refetched' }),
+                    state.statuses
+                )
+            })
+            .catch((error: any) => {
+                state.statuses = addStatus(
+                    makeStatusFromPartial({ params, status: Error(error) }),
+                    state.statuses
+                )
+            })
     }
