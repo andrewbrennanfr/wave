@@ -16,10 +16,7 @@ import { Module } from './module-types'
 import * as R from 'ramda'
 
 export const makeModule = <D, P>(
-    getKeys: {
-        getDataKey: GetDataKey<D>
-        getParamsKey: GetParamsKey<P>
-    },
+    getKeys: { getDataKey: GetDataKey<D>; getParamsKey: GetParamsKey<P> },
     requests: {
         add: AddRequest<D>
         edit: EditRequest<D>
@@ -37,5 +34,5 @@ export const makeModule = <D, P>(
     groupItems,
     sortItems,
 
-    state: makeState<D, P>(),
+    state: makeState(),
 })

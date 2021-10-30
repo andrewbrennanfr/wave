@@ -5,4 +5,6 @@ export type Item<D> = {
 
 export type GetDataKey<D> = (data: D) => string
 
-export type Items<D> = Partial<Record<ReturnType<GetDataKey<D>>, Item<D>>>
+export type ImpartialItems<D> = Record<ReturnType<GetDataKey<D>>, Item<D>>
+
+export type Items<D> = Partial<ImpartialItems<D>>

@@ -30,17 +30,22 @@ export const makeFetch =
 
         request(params)
             .then((datas) => {
-                setState({
-                    items: R.reduceRight(
-                        addItem,
-                        R.prop('items', getState()),
-                        R.map(makeItemFromData, datas)
-                    ),
-                    statuses: addStatus(
-                        makeStatusFromPartial({ params, status: 'fetched' }),
-                        R.prop('statuses', getState())
-                    ),
-                })
+                setState(
+                    R.mergeRight(getState(), {
+                        items: R.reduceRight(
+                            addItem,
+                            R.prop('items', getState()),
+                            R.map(makeItemFromData, datas)
+                        ),
+                        statuses: addStatus(
+                            makeStatusFromPartial({
+                                params,
+                                status: 'fetched',
+                            }),
+                            R.prop('statuses', getState())
+                        ),
+                    })
+                )
             })
             .catch((error: any) => {
                 setState(

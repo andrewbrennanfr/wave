@@ -22,7 +22,10 @@ export const makeEdit =
         const getState = R.prop('getState', useState)
         const setState = R.prop('setState', useState)
 
-        const oldItem = getItem(oldData, R.prop('items', getState()))
+        const oldItem =
+            getItem(oldData, R.prop('items', getState())) ||
+            makeItemFromData(oldData)
+
         const newItem = makeItemFromPartial({
             data: newData,
             status: 'editing',
@@ -33,9 +36,7 @@ export const makeEdit =
                 'items',
                 addItem(
                     newItem,
-                    oldItem
-                        ? removeItem(oldItem, R.prop('items', getState()))
-                        : R.prop('items', getState())
+                    removeItem(oldItem, R.prop('items', getState()))
                 ),
                 getState()
             )

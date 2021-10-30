@@ -1,4 +1,4 @@
-import { GetDataKey, Item, Items } from './item-types'
+import { GetDataKey, ImpartialItems, Item, Items } from './item-types'
 import * as R from 'ramda'
 
 export const makeItemFromData = <D>(data: D): Item<D> => ({
@@ -14,10 +14,8 @@ export const makeItemFromPartial = <D>(
         R.omit(['data'], partial)
     )
 
-export const filterItems = <D>(
-    items: Items<D>
-): Record<ReturnType<GetDataKey<D>>, Item<D>> =>
-    R.filter(Boolean, items) as Record<ReturnType<GetDataKey<D>>, Item<D>>
+export const filterItems = <D>(items: Items<D>): ImpartialItems<D> =>
+    R.filter(Boolean, items) as ImpartialItems<D>
 
 export const groupItems = <D>(
     fn: (item: Item<D>) => string,
