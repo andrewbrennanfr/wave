@@ -6,6 +6,8 @@ import { RefetchAction } from '../refetch/refetch-types'
 import { RemoveAction } from '../remove/remove-types'
 import { State } from '../state/state-types'
 
+//==============================================================================
+
 export type Module<D, P> = {
     add: AddAction<D, P>
     edit: EditAction<D, P>

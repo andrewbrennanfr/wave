@@ -3,6 +3,8 @@ import { Module } from '../module/module-types'
 import { UseState } from '../state/state-types'
 import * as R from 'ramda'
 
+//==============================================================================
+
 const flushPromises = () =>
     new Promise((resolve) => {
         setTimeout(resolve)
@@ -14,6 +16,8 @@ const makeUseState = <D, P>(module: Module<D, P>): UseState<D, P> => ({
         module.state = state
     },
 })
+
+//==============================================================================
 
 describe('success', () => {
     const makeModule = (): Module<string, string> =>
@@ -139,6 +143,8 @@ describe('success', () => {
         expect(R.prop('state', module)).toEqual({ items: {}, statuses: {} })
     })
 })
+
+//==============================================================================
 
 describe('error', () => {
     const makeModule = (): Module<string, string> =>
@@ -268,6 +274,8 @@ describe('error', () => {
         })
     })
 })
+
+//==============================================================================
 
 describe('tools', () => {
     const makeModule = (): Module<string, string> =>

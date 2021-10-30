@@ -6,6 +6,8 @@ import { GetParamsKey } from '../status/status-types'
 import { RefetchAction, RefetchRequest } from './refetch-types'
 import * as R from 'ramda'
 
+//==============================================================================
+
 export const makeRefetch =
     <D, P>(
         getKeys: { getDataKey: GetDataKey<D>; getParamsKey: GetParamsKey<P> },

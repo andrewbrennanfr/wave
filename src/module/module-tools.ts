@@ -15,6 +15,8 @@ import { GetParamsKey } from '../status/status-types'
 import { Module } from './module-types'
 import * as R from 'ramda'
 
+//==============================================================================
+
 export const makeModule = <D, P>(
     getKeys: { getDataKey: GetDataKey<D>; getParamsKey: GetParamsKey<P> },
     requests: {

@@ -1,6 +1,8 @@
 import { GetParamsKey, Status, Statuses } from './status-types'
 import * as R from 'ramda'
 
+//==============================================================================
+
 export const makeStatusFromParams = <P>(params: P): Status<P> => ({
     params,
     status: null,
@@ -13,6 +15,8 @@ export const makeStatusFromPartial = <P>(
         makeStatusFromParams(R.prop('params', partial)),
         R.omit(['params'], partial)
     )
+
+//==============================================================================
 
 export const makeAddStatus =
     <P>(getKeys: {

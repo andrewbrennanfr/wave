@@ -1,6 +1,8 @@
 import { GetDataKey, ImpartialItems, Item, Items } from './item-types'
 import * as R from 'ramda'
 
+//==============================================================================
+
 export const makeItemFromData = <D>(data: D): Item<D> => ({
     data,
     status: null,
@@ -13,6 +15,8 @@ export const makeItemFromPartial = <D>(
         makeItemFromData(R.prop('data', partial)),
         R.omit(['data'], partial)
     )
+
+//==============================================================================
 
 export const filterItems = <D>(items: Items<D>): ImpartialItems<D> =>
     R.filter(Boolean, items) as ImpartialItems<D>
@@ -30,6 +34,8 @@ export const sortItems = <D>(
     fn: (item: Item<D>) => number | string,
     items: Items<D>
 ): Array<Item<D>> => R.sortBy(fn, R.values(filterItems(items)))
+
+//==============================================================================
 
 export const makeAddItem =
     <D>(getKeys: {
