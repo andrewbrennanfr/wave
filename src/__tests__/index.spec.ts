@@ -11,10 +11,7 @@ const flushPromises = () =>
 const makeUseState = <D, P>(module: Module<D, P>): UseState<D, P> => ({
     getState: () => R.prop('state', module),
     setState: (state) => {
-        module.state = {
-            items: R.prop('items', state),
-            statuses: R.prop('statuses', state),
-        }
+        module.state = state
     },
 })
 
@@ -319,9 +316,10 @@ describe('tools', () => {
 
         module.add(useState, 'wave')
         module.add(useState, 'tsunami')
-        module.add(useState, 'tide')
 
         await flushPromises()
+
+        module.add(useState, 'tide')
 
         expect(
             module.sortItems<string>(
@@ -329,9 +327,9 @@ describe('tools', () => {
                 R.path(['state', 'items'], module)
             )
         ).toEqual([
-            { data: 'added tide', status: null },
             { data: 'added tsunami', status: null },
             { data: 'added wave', status: null },
+            { data: 'tide', status: 'adding' },
         ])
     })
 })
