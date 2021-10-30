@@ -1,6 +1,5 @@
 import wave from '../'
-import { Item } from '../item/item-types'
-import { head, last, nth, pipe, prop, slice, split } from 'ramda'
+import { head, last, pipe, prop, replace } from 'ramda'
 
 const flushPromises = () => new Promise((resolve) => setTimeout(resolve))
 
@@ -252,8 +251,8 @@ describe('tools', () => {
     const makeModule = () =>
         wave<string, string>(
             {
-                getDataKey: pipe(split(' '), nth(1)),
-                getParamsKey: pipe(split(' '), nth(1)),
+                getDataKey: replace('added ', ''),
+                getParamsKey: replace('added ', ''),
             },
             { add: (data) => Promise.resolve(`added ${data}`) }
         )
@@ -262,28 +261,20 @@ describe('tools', () => {
         const module = makeModule()
 
         module.add('wave')
-
-        await flushPromises()
-
         module.add('tsunami')
 
         await flushPromises()
 
         module.add('tide')
 
-        await flushPromises()
-
         expect(
-            module.groupItems(
-                pipe<Item<string>, string, string>(prop('data'), slice(6, 7)),
-                module.state.items
-            )
+            module.groupItems(pipe(prop('status'), String), module.state.items)
         ).toEqual({
-            t: {
+            adding: { tide: { data: 'tide', status: 'adding' } },
+            null: {
                 tsunami: { data: 'added tsunami', status: null },
-                tide: { data: 'added tide', status: null },
+                wave: { data: 'added wave', status: null },
             },
-            w: { wave: { data: 'added wave', status: null } },
         })
     })
 
@@ -291,28 +282,14 @@ describe('tools', () => {
         const module = makeModule()
 
         module.add('wave')
-
-        await flushPromises()
-
         module.add('tsunami')
-
-        await flushPromises()
-
         module.add('tide')
 
         await flushPromises()
 
-        expect(
-            module.sortItems(
-                pipe<Item<string>, string, string>(
-                    prop('data'),
-                    slice(-4, Infinity)
-                ),
-                module.state.items
-            )
-        ).toEqual([
-            { data: 'added tsunami', status: null },
+        expect(module.sortItems(prop('data'), module.state.items)).toEqual([
             { data: 'added tide', status: null },
+            { data: 'added tsunami', status: null },
             { data: 'added wave', status: null },
         ])
     })
