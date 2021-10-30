@@ -1,67 +1,66 @@
-import { GetDataKey, Item, Items, PartialItem, PublicItems } from './item-types'
-import {
-    assoc,
-    equals,
-    fromPairs,
-    groupBy,
-    last,
-    map,
-    mergeRight,
-    omit,
-    pipe,
-    prop,
-    reject,
-    sortBy,
-    toPairs,
-    values,
-} from 'ramda'
-
-export const coerceToItems = <D>(items: PublicItems<D>): Items<D> =>
-    items as Items<D>
+import { GetDataKey, Item, Items } from './item-types'
+import * as R from 'ramda'
 
 export const makeItemFromData = <D>(data: D): Item<D> => ({
     data,
     status: null,
 })
 
-export const makeItemFromPartial = <D>(partial: PartialItem<D>): Item<D> =>
-    mergeRight(makeItemFromData(prop('data', partial)), omit(['data'], partial))
+export const makeItemFromPartial = <D>(
+    partial: Pick<Item<D>, 'data'> & Partial<Omit<Item<D>, 'data'>>
+): Item<D> =>
+    R.mergeRight(
+        makeItemFromData(R.prop('data', partial)),
+        R.omit(['data'], partial)
+    )
+
+export const filterItems = <D>(
+    items: Items<D>
+): Record<ReturnType<GetDataKey<D>>, Item<D>> =>
+    R.filter(Boolean, items) as Record<ReturnType<GetDataKey<D>>, Item<D>>
 
 export const groupItems = <D>(
     fn: (item: Item<D>) => string,
-    items: PublicItems<D>
-): Partial<Record<ReturnType<typeof fn>, PublicItems<D>>> =>
-    map(fromPairs, groupBy(pipe(last, fn), toPairs(coerceToItems(items))))
+    items: Items<D>
+): Partial<Record<ReturnType<typeof fn>, Items<D>>> =>
+    R.map(
+        R.fromPairs,
+        R.groupBy(R.pipe(R.last, fn), R.toPairs(filterItems(items)))
+    )
 
 export const sortItems = <D>(
     fn: (item: Item<D>) => number | string,
-    items: PublicItems<D>
-): Array<Item<D>> => sortBy(fn, values(coerceToItems(items)))
+    items: Items<D>
+): Array<Item<D>> => R.sortBy(fn, R.values(filterItems(items)))
 
-export const useAddItem =
+export const makeAddItem =
     <D>(getKeys: {
         getDataKey: GetDataKey<D>
     }): ((item: Item<D>, items: Items<D>) => Items<D>) =>
     (item, items) =>
-        assoc(prop('getDataKey', getKeys)(prop('data', item)), item, items)
-
-export const useGetItem =
-    <D>(getKeys: {
-        getDataKey: GetDataKey<D>
-    }): ((data: D, items: Items<D>) => Item<D>) =>
-    (data, items) =>
-        prop(prop('getDataKey', getKeys)(data), items)
-
-export const useRemoveItem =
-    <D>(getKeys: {
-        getDataKey: GetDataKey<D>
-    }): ((item: Item<D>, items: Items<D>) => Items<D>) =>
-    (item, items) =>
-        reject(
-            pipe(
-                prop('data'),
-                prop('getDataKey', getKeys),
-                equals(prop('getDataKey', getKeys)(prop('data', item)))
-            ),
+        R.assoc(
+            R.prop('getDataKey', getKeys)(R.prop('data', item)),
+            item,
             items
+        )
+
+export const makeGetItem =
+    <D>(getKeys: {
+        getDataKey: GetDataKey<D>
+    }): ((data: D, items: Items<D>) => Item<D> | undefined) =>
+    (data, items) =>
+        R.prop(R.prop('getDataKey', getKeys)(data), items)
+
+export const makeRemoveItem =
+    <D>(getKeys: {
+        getDataKey: GetDataKey<D>
+    }): ((item: Item<D>, items: Items<D>) => Items<D>) =>
+    (item, items) =>
+        R.reject(
+            R.pipe(
+                R.prop('data'),
+                R.prop('getDataKey', getKeys),
+                R.equals(R.prop('getDataKey', getKeys)(R.prop('data', item)))
+            ),
+            filterItems(items)
         )

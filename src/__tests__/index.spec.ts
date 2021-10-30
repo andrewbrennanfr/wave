@@ -1,12 +1,27 @@
 import wave from '../'
-import { head, last, pipe, prop, replace } from 'ramda'
+import { Module } from '../module/module-types'
+import { UseState } from '../state/state-types'
+import * as R from 'ramda'
 
-const flushPromises = () => new Promise((resolve) => setTimeout(resolve))
+const flushPromises = () =>
+    new Promise((resolve) => {
+        setTimeout(resolve)
+    })
+
+const makeUseState = <D, P>(module: Module<D, P>): UseState<D, P> => ({
+    getState: () => R.prop('state', module),
+    setState: (state) => {
+        module.state = {
+            items: R.prop('items', state),
+            statuses: R.prop('statuses', state),
+        }
+    },
+})
 
 describe('success', () => {
-    const makeModule = () =>
+    const makeModule = (): Module<string, string> =>
         wave<string, string>(
-            { getDataKey: head, getParamsKey: last },
+            { getDataKey: R.head, getParamsKey: R.last },
             {
                 add: (data) => Promise.resolve(`added ${data}`),
                 edit: (_, newData) => Promise.resolve(`edited ${newData}`),
@@ -18,17 +33,18 @@ describe('success', () => {
 
     test('add', async () => {
         const module = makeModule()
+        const useState = makeUseState(module)
 
-        module.add('wave')
+        module.add(useState, 'wave')
 
-        expect(module.state).toEqual({
+        expect(R.prop('state', module)).toEqual({
             items: { w: { data: 'wave', status: 'adding' } },
             statuses: {},
         })
 
         await flushPromises()
 
-        expect(module.state).toEqual({
+        expect(R.prop('state', module)).toEqual({
             items: { a: { data: 'added wave', status: null } },
             statuses: {},
         })
@@ -36,21 +52,22 @@ describe('success', () => {
 
     test('edit', async () => {
         const module = makeModule()
+        const useState = makeUseState(module)
 
-        module.add('wave')
+        module.add(useState, 'wave')
 
         await flushPromises()
 
-        module.edit('added wave', 'tsunami')
+        module.edit(useState, 'added wave', 'tsunami')
 
-        expect(module.state).toEqual({
+        expect(R.prop('state', module)).toEqual({
             items: { t: { data: 'tsunami', status: 'editing' } },
             statuses: {},
         })
 
         await flushPromises()
 
-        expect(module.state).toEqual({
+        expect(R.prop('state', module)).toEqual({
             items: { e: { data: 'edited tsunami', status: null } },
             statuses: {},
         })
@@ -58,21 +75,22 @@ describe('success', () => {
 
     test('fetch', async () => {
         const module = makeModule()
+        const useState = makeUseState(module)
 
-        module.add('wave')
+        module.add(useState, 'wave')
 
         await flushPromises()
 
-        module.fetch('tsunami')
+        module.fetch(useState, 'tsunami')
 
-        expect(module.state).toEqual({
+        expect(R.prop('state', module)).toEqual({
             items: { a: { data: 'added wave', status: null } },
             statuses: { i: { params: 'tsunami', status: 'fetching' } },
         })
 
         await flushPromises()
 
-        expect(module.state).toEqual({
+        expect(R.prop('state', module)).toEqual({
             items: {
                 a: { data: 'added wave', status: null },
                 f: { data: 'fetched tsunami', status: null },
@@ -83,21 +101,22 @@ describe('success', () => {
 
     test('refetch', async () => {
         const module = makeModule()
+        const useState = makeUseState(module)
 
-        module.add('wave')
+        module.add(useState, 'wave')
 
         await flushPromises()
 
-        module.refetch('tsunami')
+        module.refetch(useState, 'tsunami')
 
-        expect(module.state).toEqual({
+        expect(R.prop('state', module)).toEqual({
             items: { a: { data: 'added wave', status: null } },
             statuses: { i: { params: 'tsunami', status: 'refetching' } },
         })
 
         await flushPromises()
 
-        expect(module.state).toEqual({
+        expect(R.prop('state', module)).toEqual({
             items: { r: { data: 'refetched tsunami', status: null } },
             statuses: { i: { params: 'tsunami', status: 'refetched' } },
         })
@@ -105,50 +124,52 @@ describe('success', () => {
 
     test('remove', async () => {
         const module = makeModule()
+        const useState = makeUseState(module)
 
-        module.add('wave')
+        module.add(useState, 'wave')
 
         await flushPromises()
 
-        module.remove('added wave')
+        module.remove(useState, 'added wave')
 
-        expect(module.state).toEqual({
+        expect(R.prop('state', module)).toEqual({
             items: { a: { data: 'added wave', status: 'removing' } },
             statuses: {},
         })
 
         await flushPromises()
 
-        expect(module.state).toEqual({ items: {}, statuses: {} })
+        expect(R.prop('state', module)).toEqual({ items: {}, statuses: {} })
     })
 })
 
 describe('error', () => {
-    const makeModule = () =>
+    const makeModule = (): Module<string, string> =>
         wave<string, string>(
-            { getDataKey: head, getParamsKey: last },
+            { getDataKey: R.head, getParamsKey: R.last },
             {
                 add: (data) => Promise.reject(`added ${data}`),
                 edit: (_, newData) => Promise.reject(`edited ${newData}`),
-                fetch: (params) => Promise.reject([`fetched ${params}`]),
-                refetch: (params) => Promise.reject([`refetched ${params}`]),
+                fetch: (params) => Promise.reject(`fetched ${params}`),
+                refetch: (params) => Promise.reject(`refetched ${params}`),
                 remove: (data) => Promise.reject(`removed ${data}`),
             }
         )
 
     test('add', async () => {
         const module = makeModule()
+        const useState = makeUseState(module)
 
-        module.add('wave')
+        module.add(useState, 'wave')
 
-        expect(module.state).toEqual({
+        expect(R.prop('state', module)).toEqual({
             items: { w: { data: 'wave', status: 'adding' } },
             statuses: {},
         })
 
         await flushPromises()
 
-        expect(module.state).toEqual({
+        expect(R.prop('state', module)).toEqual({
             items: { w: { data: 'wave', status: Error('added wave') } },
             statuses: {},
         })
@@ -156,21 +177,22 @@ describe('error', () => {
 
     test('edit', async () => {
         const module = makeModule()
+        const useState = makeUseState(module)
 
-        module.add('wave')
+        module.add(useState, 'wave')
 
         await flushPromises()
 
-        module.edit('wave', 'tsunami')
+        module.edit(useState, 'wave', 'tsunami')
 
-        expect(module.state).toEqual({
+        expect(R.prop('state', module)).toEqual({
             items: { t: { data: 'tsunami', status: 'editing' } },
             statuses: {},
         })
 
         await flushPromises()
 
-        expect(module.state).toEqual({
+        expect(R.prop('state', module)).toEqual({
             items: { t: { data: 'tsunami', status: Error('edited tsunami') } },
             statuses: {},
         })
@@ -178,21 +200,22 @@ describe('error', () => {
 
     test('fetch', async () => {
         const module = makeModule()
+        const useState = makeUseState(module)
 
-        module.add('wave')
+        module.add(useState, 'wave')
 
         await flushPromises()
 
-        module.fetch('tsunami')
+        module.fetch(useState, 'tsunami')
 
-        expect(module.state).toEqual({
+        expect(R.prop('state', module)).toEqual({
             items: { w: { data: 'wave', status: Error('added wave') } },
             statuses: { i: { params: 'tsunami', status: 'fetching' } },
         })
 
         await flushPromises()
 
-        expect(module.state).toEqual({
+        expect(R.prop('state', module)).toEqual({
             items: { w: { data: 'wave', status: Error('added wave') } },
             statuses: {
                 i: { params: 'tsunami', status: Error('fetched tsunami') },
@@ -202,21 +225,22 @@ describe('error', () => {
 
     test('refetch', async () => {
         const module = makeModule()
+        const useState = makeUseState(module)
 
-        module.add('wave')
+        module.add(useState, 'wave')
 
         await flushPromises()
 
-        module.refetch('tsunami')
+        module.refetch(useState, 'tsunami')
 
-        expect(module.state).toEqual({
+        expect(R.prop('state', module)).toEqual({
             items: { w: { data: 'wave', status: Error('added wave') } },
             statuses: { i: { params: 'tsunami', status: 'refetching' } },
         })
 
         await flushPromises()
 
-        expect(module.state).toEqual({
+        expect(R.prop('state', module)).toEqual({
             items: { w: { data: 'wave', status: Error('added wave') } },
             statuses: {
                 i: { params: 'tsunami', status: Error('refetched tsunami') },
@@ -226,21 +250,22 @@ describe('error', () => {
 
     test('remove', async () => {
         const module = makeModule()
+        const useState = makeUseState(module)
 
-        module.add('wave')
+        module.add(useState, 'wave')
 
         await flushPromises()
 
-        module.remove('wave')
+        module.remove(useState, 'wave')
 
-        expect(module.state).toEqual({
+        expect(R.prop('state', module)).toEqual({
             items: { w: { data: 'wave', status: 'removing' } },
             statuses: {},
         })
 
         await flushPromises()
 
-        expect(module.state).toEqual({
+        expect(R.prop('state', module)).toEqual({
             items: { w: { data: 'wave', status: Error('removed wave') } },
             statuses: {},
         })
@@ -248,27 +273,37 @@ describe('error', () => {
 })
 
 describe('tools', () => {
-    const makeModule = () =>
+    const makeModule = (): Module<string, string> =>
         wave<string, string>(
             {
-                getDataKey: replace('added ', ''),
-                getParamsKey: replace('added ', ''),
+                getDataKey: R.replace('added ', ''),
+                getParamsKey: R.replace('added ', ''),
             },
-            { add: (data) => Promise.resolve(`added ${data}`) }
+            {
+                add: (data) => Promise.resolve(`added ${data}`),
+                edit: (_, newData) => Promise.resolve(`edited ${newData}`),
+                fetch: (params) => Promise.resolve([`fetched ${params}`]),
+                refetch: (params) => Promise.resolve([`refetched ${params}`]),
+                remove: () => Promise.resolve(),
+            }
         )
 
     test('group', async () => {
         const module = makeModule()
+        const useState = makeUseState(module)
 
-        module.add('wave')
-        module.add('tsunami')
+        module.add(useState, 'wave')
+        module.add(useState, 'tsunami')
 
         await flushPromises()
 
-        module.add('tide')
+        module.add(useState, 'tide')
 
         expect(
-            module.groupItems(pipe(prop('status'), String), module.state.items)
+            module.groupItems<string>(
+                R.pipe(R.prop('status'), String),
+                R.path(['state', 'items'], module)
+            )
         ).toEqual({
             adding: { tide: { data: 'tide', status: 'adding' } },
             null: {
@@ -280,14 +315,20 @@ describe('tools', () => {
 
     test('sort', async () => {
         const module = makeModule()
+        const useState = makeUseState(module)
 
-        module.add('wave')
-        module.add('tsunami')
-        module.add('tide')
+        module.add(useState, 'wave')
+        module.add(useState, 'tsunami')
+        module.add(useState, 'tide')
 
         await flushPromises()
 
-        expect(module.sortItems(prop('data'), module.state.items)).toEqual([
+        expect(
+            module.sortItems<string>(
+                R.prop('data'),
+                R.path(['state', 'items'], module)
+            )
+        ).toEqual([
             { data: 'added tide', status: null },
             { data: 'added tsunami', status: null },
             { data: 'added wave', status: null },

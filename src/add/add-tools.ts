@@ -1,43 +1,58 @@
 import {
     makeItemFromData,
     makeItemFromPartial,
-    useAddItem,
-    useGetItem,
-    useRemoveItem,
+    makeAddItem,
+    makeRemoveItem,
 } from '../item/item-tools'
 import { GetDataKey } from '../item/item-types'
-import { State } from '../state/state-types'
 import { AddAction, AddRequest } from './add-types'
+import * as R from 'ramda'
 
-export const useAdd =
+export const makeAdd =
     <D, P>(
         getKeys: { getDataKey: GetDataKey<D> },
-        state: State<D, P>,
-        request?: AddRequest<D>
-    ): AddAction<D> =>
-    (data) => {
-        if (!request) return
+        request: AddRequest<D>
+    ): AddAction<D, P> =>
+    (useState, data) => {
+        const addItem = makeAddItem(getKeys)
+        const removeItem = makeRemoveItem(getKeys)
 
-        const addItem = useAddItem(getKeys)
-        const getItem = useGetItem(getKeys)
-        const removeItem = useRemoveItem(getKeys)
+        const getState = R.prop('getState', useState)
+        const setState = R.prop('setState', useState)
 
-        state.items = addItem(
-            makeItemFromPartial({ data, status: 'adding' }),
-            state.items
+        const item = makeItemFromPartial({ data, status: 'adding' })
+
+        setState(
+            R.assoc(
+                'items',
+                addItem(item, R.prop('items', getState())),
+                getState()
+            )
         )
 
         request(data)
             .then((newData) => {
-                state.items = addItem(
-                    makeItemFromData(newData),
-                    removeItem(getItem(data, state.items), state.items)
+                setState(
+                    R.assoc(
+                        'items',
+                        addItem(
+                            makeItemFromData(newData),
+                            removeItem(item, R.prop('items', getState()))
+                        ),
+                        getState()
+                    )
                 )
             })
             .catch((error: any) => {
-                state.items = addItem(
-                    makeItemFromPartial({ data, status: Error(error) }),
-                    state.items
+                setState(
+                    R.assoc(
+                        'items',
+                        addItem(
+                            makeItemFromPartial({ data, status: Error(error) }),
+                            R.prop('items', getState())
+                        ),
+                        getState()
+                    )
                 )
             })
     }

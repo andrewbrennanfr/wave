@@ -1,45 +1,60 @@
-import { makeItemFromData, useAddItem } from '../item/item-tools'
+import { FetchAction, FetchRequest } from '../fetch/fetch-types'
+import { makeItemFromData, makeAddItem } from '../item/item-tools'
 import { GetDataKey } from '../item/item-types'
-import { RefetchAction, RefetchRequest } from '../refetch/refetch-types'
-import { State } from '../state/state-types'
-import { makeStatusFromPartial, useAddStatus } from '../status/status-tools'
+import { makeStatusFromPartial, makeAddStatus } from '../status/status-tools'
 import { GetParamsKey } from '../status/status-types'
-import { map, reduceRight } from 'ramda'
+import * as R from 'ramda'
 
-export const useFetch =
+export const makeFetch =
     <D, P>(
         getKeys: { getDataKey: GetDataKey<D>; getParamsKey: GetParamsKey<P> },
-        state: State<D, P>,
-        request?: RefetchRequest<D, P>
-    ): RefetchAction<P> =>
-    (params) => {
-        if (!request) return
+        request: FetchRequest<D, P>
+    ): FetchAction<D, P> =>
+    (useState, params) => {
+        const addItem = makeAddItem(getKeys)
+        const addStatus = makeAddStatus(getKeys)
 
-        const addItem = useAddItem(getKeys)
-        const addStatus = useAddStatus(getKeys)
+        const getState = R.prop('getState', useState)
+        const setState = R.prop('setState', useState)
 
-        state.statuses = addStatus(
-            makeStatusFromPartial({ params, status: 'fetching' }),
-            state.statuses
+        setState(
+            R.assoc(
+                'statuses',
+                addStatus(
+                    makeStatusFromPartial({ params, status: 'fetching' }),
+                    R.prop('statuses', getState())
+                ),
+                getState()
+            )
         )
 
         request(params)
             .then((datas) => {
-                state.items = reduceRight(
-                    addItem,
-                    state.items,
-                    map(makeItemFromData, datas)
-                )
-
-                state.statuses = addStatus(
-                    makeStatusFromPartial({ params, status: 'fetched' }),
-                    state.statuses
-                )
+                setState({
+                    items: R.reduceRight(
+                        addItem,
+                        R.prop('items', getState()),
+                        R.map(makeItemFromData, datas)
+                    ),
+                    statuses: addStatus(
+                        makeStatusFromPartial({ params, status: 'fetched' }),
+                        R.prop('statuses', getState())
+                    ),
+                })
             })
             .catch((error: any) => {
-                state.statuses = addStatus(
-                    makeStatusFromPartial({ params, status: Error(error) }),
-                    state.statuses
+                setState(
+                    R.assoc(
+                        'statuses',
+                        addStatus(
+                            makeStatusFromPartial({
+                                params,
+                                status: Error(error),
+                            }),
+                            R.prop('statuses', getState())
+                        ),
+                        getState()
+                    )
                 )
             })
     }

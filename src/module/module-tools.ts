@@ -1,36 +1,41 @@
-import { useAdd } from '../add/add-tools'
+import { makeAdd } from '../add/add-tools'
 import { AddRequest } from '../add/add-types'
-import { useEdit } from '../edit/edit-tools'
+import { makeEdit } from '../edit/edit-tools'
 import { EditRequest } from '../edit/edit-types'
-import { useFetch } from '../fetch/fetch-tools'
+import { makeFetch } from '../fetch/fetch-tools'
 import { FetchRequest } from '../fetch/fetch-types'
 import { groupItems, sortItems } from '../item/item-tools'
 import { GetDataKey } from '../item/item-types'
-import { useRefetch } from '../refetch/refetch-tools'
+import { makeRefetch } from '../refetch/refetch-tools'
 import { RefetchRequest } from '../refetch/refetch-types'
-import { useRemove } from '../remove/remove-tools'
+import { makeRemove } from '../remove/remove-tools'
 import { RemoveRequest } from '../remove/remove-types'
 import { makeState } from '../state/state-tools'
 import { GetParamsKey } from '../status/status-types'
 import { Module } from './module-types'
+import * as R from 'ramda'
 
-export const useModule = <D, P>(
-    getKeys: { getDataKey: GetDataKey<D>; getParamsKey: GetParamsKey<P> },
-    requests: Partial<{
+export const makeModule = <D, P>(
+    getKeys: {
+        getDataKey: GetDataKey<D>
+        getParamsKey: GetParamsKey<P>
+    },
+    requests: {
         add: AddRequest<D>
         edit: EditRequest<D>
         fetch: FetchRequest<D, P>
         refetch: RefetchRequest<D, P>
         remove: RemoveRequest<D>
-    }>
-): Module<D, P> => {
-    const state = makeState<D, P>()
+    }
+): Module<D, P> => ({
+    add: makeAdd(getKeys, R.prop('add', requests)),
+    edit: makeEdit(getKeys, R.prop('edit', requests)),
+    fetch: makeFetch(getKeys, R.prop('fetch', requests)),
+    refetch: makeRefetch(getKeys, R.prop('refetch', requests)),
+    remove: makeRemove(getKeys, R.prop('remove', requests)),
 
-    const add = useAdd(getKeys, state, requests.add)
-    const edit = useEdit(getKeys, state, requests.edit)
-    const fetch = useFetch(getKeys, state, requests.fetch)
-    const refetch = useRefetch(getKeys, state, requests.refetch)
-    const remove = useRemove(getKeys, state, requests.remove)
+    groupItems,
+    sortItems,
 
-    return { state, groupItems, sortItems, add, edit, fetch, refetch, remove }
-}
+    state: makeState<D, P>(),
+})
