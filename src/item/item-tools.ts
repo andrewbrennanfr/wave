@@ -33,7 +33,7 @@ export const groupItems = <D>(
 ): Partial<Record<ReturnType<typeof fn>, PublicItems<D>>> =>
     map(fromPairs, groupBy(pipe(last, fn), toPairs(coerceToItems(items))))
 
-export const sortItems = <D, P>(
+export const sortItems = <D>(
     fn: (item: Item<D>) => number | string,
     items: PublicItems<D>
 ): Array<Item<D>> => sortBy(fn, values(coerceToItems(items)))
