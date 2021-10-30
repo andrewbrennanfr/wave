@@ -28,15 +28,15 @@ export const makeItemFromPartial = <D>(partial: PartialItem<D>): Item<D> =>
     mergeRight(makeItemFromData(prop('data', partial)), omit(['data'], partial))
 
 export const groupItems = <D>(
-    grouper: (item: Item<D>) => string,
+    fn: (item: Item<D>) => string,
     items: PublicItems<D>
-): Partial<Record<ReturnType<typeof grouper>, PublicItems<D>>> =>
-    map(fromPairs, groupBy(pipe(last, grouper), toPairs(coerceToItems(items))))
+): Partial<Record<ReturnType<typeof fn>, PublicItems<D>>> =>
+    map(fromPairs, groupBy(pipe(last, fn), toPairs(coerceToItems(items))))
 
 export const sortItems = <D, P>(
-    comparator: (item: Item<D>) => number | string,
+    fn: (item: Item<D>) => number | string,
     items: PublicItems<D>
-): Array<Item<D>> => sortBy(comparator, values(coerceToItems(items)))
+): Array<Item<D>> => sortBy(fn, values(coerceToItems(items)))
 
 export const useAddItem =
     <D>(getKeys: {
