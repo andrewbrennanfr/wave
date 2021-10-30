@@ -1,5 +1,5 @@
 {
-    "name": "wave",
+    "name": "@andrewbrennanfr/wave",
     "version": "0.1.0",
     "source": "src/index.ts",
     "main": "dist/wave.js",
@@ -27,5 +27,12 @@
     },
     "dependencies": {
         "ramda": "^0.27.1"
-    }
+    },
+    "bugs": "https://github.com/andrewbrennanfr/wave/issues",
+    "homepage": "https://github.com/andrewbrennanfr/wave#readme",
+    "keywords": [
+        "typescript",
+        "functional-programming",
+        "state-management"
+    ]
 }
