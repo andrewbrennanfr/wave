@@ -15,7 +15,7 @@ export const useEdit =
         state: State<D, P>,
         request?: EditRequest<D>
     ): EditAction<D> =>
-    (oldData: D, newData: D) => {
+    (oldData, newData) => {
         if (!request) return
 
         const addItem = useAddItem(getKeys)
