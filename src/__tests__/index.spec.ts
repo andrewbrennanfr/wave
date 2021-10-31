@@ -5,7 +5,7 @@ import * as R from 'ramda'
 
 //==============================================================================
 
-const flushPromises = () =>
+const flushAsync = () =>
     new Promise((resolve) => {
         setTimeout(resolve)
     })
@@ -43,7 +43,7 @@ describe('success', () => {
             statuses: {},
         })
 
-        await flushPromises()
+        await flushAsync()
 
         expect(R.prop('state', module)).toEqual({
             items: { a: { data: 'added wave', status: null } },
@@ -56,16 +56,15 @@ describe('success', () => {
         const useState = makeUseState(module)
 
         module.add(useState, 'wave')
-        module.add(useState, 'tsunami')
-        module.add(useState, 'tide')
 
-        module.clear(useState, R.propEq('data', 'tsunami'))
+        await flushAsync()
+
+        module.clear(useState, R.propEq('data', 'added wave'))
+
+        await flushAsync()
 
         expect(R.prop('state', module)).toEqual({
-            items: {
-                t: { data: 'tide', status: 'adding' },
-                w: { data: 'wave', status: 'adding' },
-            },
+            items: {},
             statuses: {},
         })
     })
@@ -76,7 +75,7 @@ describe('success', () => {
 
         module.add(useState, 'wave')
 
-        await flushPromises()
+        await flushAsync()
 
         module.edit(useState, 'added wave', 'tsunami')
 
@@ -85,7 +84,7 @@ describe('success', () => {
             statuses: {},
         })
 
-        await flushPromises()
+        await flushAsync()
 
         expect(R.prop('state', module)).toEqual({
             items: { e: { data: 'edited tsunami', status: null } },
@@ -99,7 +98,7 @@ describe('success', () => {
 
         module.add(useState, 'wave')
 
-        await flushPromises()
+        await flushAsync()
 
         module.fetch(useState, 'tsunami')
 
@@ -108,7 +107,7 @@ describe('success', () => {
             statuses: { i: { params: 'tsunami', status: 'fetching' } },
         })
 
-        await flushPromises()
+        await flushAsync()
 
         expect(R.prop('state', module)).toEqual({
             items: {
@@ -125,7 +124,7 @@ describe('success', () => {
 
         module.add(useState, 'wave')
 
-        await flushPromises()
+        await flushAsync()
 
         module.refetch(useState, 'tsunami')
 
@@ -134,7 +133,7 @@ describe('success', () => {
             statuses: { i: { params: 'tsunami', status: 'refetching' } },
         })
 
-        await flushPromises()
+        await flushAsync()
 
         expect(R.prop('state', module)).toEqual({
             items: { r: { data: 'refetched tsunami', status: null } },
@@ -148,7 +147,7 @@ describe('success', () => {
 
         module.add(useState, 'wave')
 
-        await flushPromises()
+        await flushAsync()
 
         module.remove(useState, 'added wave')
 
@@ -157,7 +156,7 @@ describe('success', () => {
             statuses: {},
         })
 
-        await flushPromises()
+        await flushAsync()
 
         expect(R.prop('state', module)).toEqual({ items: {}, statuses: {} })
     })
@@ -189,7 +188,7 @@ describe('error', () => {
             statuses: {},
         })
 
-        await flushPromises()
+        await flushAsync()
 
         expect(R.prop('state', module)).toEqual({
             items: { w: { data: 'wave', status: Error('added wave') } },
@@ -203,7 +202,7 @@ describe('error', () => {
 
         module.add(useState, 'wave')
 
-        await flushPromises()
+        await flushAsync()
 
         module.edit(useState, 'wave', 'tsunami')
 
@@ -212,7 +211,7 @@ describe('error', () => {
             statuses: {},
         })
 
-        await flushPromises()
+        await flushAsync()
 
         expect(R.prop('state', module)).toEqual({
             items: { t: { data: 'tsunami', status: Error('edited tsunami') } },
@@ -226,7 +225,7 @@ describe('error', () => {
 
         module.add(useState, 'wave')
 
-        await flushPromises()
+        await flushAsync()
 
         module.fetch(useState, 'tsunami')
 
@@ -235,7 +234,7 @@ describe('error', () => {
             statuses: { i: { params: 'tsunami', status: 'fetching' } },
         })
 
-        await flushPromises()
+        await flushAsync()
 
         expect(R.prop('state', module)).toEqual({
             items: { w: { data: 'wave', status: Error('added wave') } },
@@ -251,7 +250,7 @@ describe('error', () => {
 
         module.add(useState, 'wave')
 
-        await flushPromises()
+        await flushAsync()
 
         module.refetch(useState, 'tsunami')
 
@@ -260,7 +259,7 @@ describe('error', () => {
             statuses: { i: { params: 'tsunami', status: 'refetching' } },
         })
 
-        await flushPromises()
+        await flushAsync()
 
         expect(R.prop('state', module)).toEqual({
             items: { w: { data: 'wave', status: Error('added wave') } },
@@ -276,7 +275,7 @@ describe('error', () => {
 
         module.add(useState, 'wave')
 
-        await flushPromises()
+        await flushAsync()
 
         module.remove(useState, 'wave')
 
@@ -285,7 +284,7 @@ describe('error', () => {
             statuses: {},
         })
 
-        await flushPromises()
+        await flushAsync()
 
         expect(R.prop('state', module)).toEqual({
             items: { w: { data: 'wave', status: Error('removed wave') } },
@@ -319,7 +318,7 @@ describe('tools', () => {
         module.add(useState, 'wave')
         module.add(useState, 'tsunami')
 
-        await flushPromises()
+        await flushAsync()
 
         module.add(useState, 'tide')
 
@@ -344,7 +343,7 @@ describe('tools', () => {
         module.add(useState, 'wave')
         module.add(useState, 'tsunami')
 
-        await flushPromises()
+        await flushAsync()
 
         module.add(useState, 'tide')
 
