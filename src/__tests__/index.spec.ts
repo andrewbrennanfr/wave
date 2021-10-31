@@ -51,6 +51,25 @@ describe('success', () => {
         })
     })
 
+    test('clear', async () => {
+        const module = makeModule()
+        const useState = makeUseState(module)
+
+        module.add(useState, 'wave')
+        module.add(useState, 'tsunami')
+        module.add(useState, 'tide')
+
+        module.clear(useState, R.propEq('data', 'tsunami'))
+
+        expect(R.prop('state', module)).toEqual({
+            items: {
+                t: { data: 'tide', status: 'adding' },
+                w: { data: 'wave', status: 'adding' },
+            },
+            statuses: {},
+        })
+    })
+
     test('edit', async () => {
         const module = makeModule()
         const useState = makeUseState(module)

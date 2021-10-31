@@ -1,5 +1,6 @@
 import { makeAdd } from '../add/add-tools'
 import { AddRequest } from '../add/add-types'
+import { makeClear } from '../clear/clear-tools'
 import { makeEdit } from '../edit/edit-tools'
 import { EditRequest } from '../edit/edit-types'
 import { makeFetch } from '../fetch/fetch-tools'
@@ -28,6 +29,7 @@ export const makeModule = <D, P>(
     }
 ): Module<D, P> => ({
     add: makeAdd(getKeys, R.prop('add', requests)),
+    clear: makeClear(),
     edit: makeEdit(getKeys, R.prop('edit', requests)),
     fetch: makeFetch(getKeys, R.prop('fetch', requests)),
     refetch: makeRefetch(getKeys, R.prop('refetch', requests)),
