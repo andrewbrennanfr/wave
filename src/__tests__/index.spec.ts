@@ -1,8 +1,8 @@
 import wave from '../'
+import { ImpartialItems } from '../item/item-types'
 import { Module } from '../module/module-types'
 import { UseState } from '../state/state-types'
 import * as R from 'ramda'
-import { ImpartialItems } from '../item/item-types'
 
 //==============================================================================
 
@@ -37,16 +37,18 @@ describe('success', () => {
         const module = makeModule()
         const useState = makeUseState(module)
 
+        const getState = R.prop('getState', useState)
+
         module.add(useState, 'wave')
 
-        expect(R.prop('state', module)).toEqual({
+        expect(getState()).toEqual({
             items: { w: { data: 'wave', status: 'adding' } },
             statuses: {},
         })
 
         await flushAsync()
 
-        expect(R.prop('state', module)).toEqual({
+        expect(getState()).toEqual({
             items: { a: { data: 'added wave', status: null } },
             statuses: {},
         })
@@ -56,6 +58,8 @@ describe('success', () => {
         const module = makeModule()
         const useState = makeUseState(module)
 
+        const getState = R.prop('getState', useState)
+
         module.add(useState, 'wave')
 
         await flushAsync()
@@ -64,15 +68,19 @@ describe('success', () => {
 
         module.clear(useState, R.propEq('data', 'added wave'))
 
-        expect(R.prop('state', module)).toEqual({
+        expect(getState()).toEqual({
             items: { t: { data: 'tsunami', status: 'adding' } },
             statuses: {},
         })
+
+        await flushAsync()
     })
 
     test('edit', async () => {
         const module = makeModule()
         const useState = makeUseState(module)
+
+        const getState = R.prop('getState', useState)
 
         module.add(useState, 'wave')
 
@@ -80,14 +88,14 @@ describe('success', () => {
 
         module.edit(useState, 'added wave', 'tsunami')
 
-        expect(R.prop('state', module)).toEqual({
+        expect(getState()).toEqual({
             items: { t: { data: 'tsunami', status: 'editing' } },
             statuses: {},
         })
 
         await flushAsync()
 
-        expect(R.prop('state', module)).toEqual({
+        expect(getState()).toEqual({
             items: { e: { data: 'edited tsunami', status: null } },
             statuses: {},
         })
@@ -97,20 +105,22 @@ describe('success', () => {
         const module = makeModule()
         const useState = makeUseState(module)
 
+        const getState = R.prop('getState', useState)
+
         module.add(useState, 'wave')
 
         await flushAsync()
 
         module.fetch(useState, 'tsunami')
 
-        expect(R.prop('state', module)).toEqual({
+        expect(getState()).toEqual({
             items: { a: { data: 'added wave', status: null } },
             statuses: { i: { params: 'tsunami', status: 'fetching' } },
         })
 
         await flushAsync()
 
-        expect(R.prop('state', module)).toEqual({
+        expect(getState()).toEqual({
             items: {
                 a: { data: 'added wave', status: null },
                 f: { data: 'fetched tsunami', status: null },
@@ -123,20 +133,22 @@ describe('success', () => {
         const module = makeModule()
         const useState = makeUseState(module)
 
+        const getState = R.prop('getState', useState)
+
         module.add(useState, 'wave')
 
         await flushAsync()
 
         module.refetch(useState, 'tsunami')
 
-        expect(R.prop('state', module)).toEqual({
+        expect(getState()).toEqual({
             items: { a: { data: 'added wave', status: null } },
             statuses: { i: { params: 'tsunami', status: 'refetching' } },
         })
 
         await flushAsync()
 
-        expect(R.prop('state', module)).toEqual({
+        expect(getState()).toEqual({
             items: { r: { data: 'refetched tsunami', status: null } },
             statuses: { i: { params: 'tsunami', status: 'refetched' } },
         })
@@ -146,20 +158,22 @@ describe('success', () => {
         const module = makeModule()
         const useState = makeUseState(module)
 
+        const getState = R.prop('getState', useState)
+
         module.add(useState, 'wave')
 
         await flushAsync()
 
         module.remove(useState, 'added wave')
 
-        expect(R.prop('state', module)).toEqual({
+        expect(getState()).toEqual({
             items: { a: { data: 'added wave', status: 'removing' } },
             statuses: {},
         })
 
         await flushAsync()
 
-        expect(R.prop('state', module)).toEqual({ items: {}, statuses: {} })
+        expect(getState()).toEqual({ items: {}, statuses: {} })
     })
 })
 
@@ -182,16 +196,18 @@ describe('error', () => {
         const module = makeModule()
         const useState = makeUseState(module)
 
+        const getState = R.prop('getState', useState)
+
         module.add(useState, 'wave')
 
-        expect(R.prop('state', module)).toEqual({
+        expect(getState()).toEqual({
             items: { w: { data: 'wave', status: 'adding' } },
             statuses: {},
         })
 
         await flushAsync()
 
-        expect(R.prop('state', module)).toEqual({
+        expect(getState()).toEqual({
             items: { w: { data: 'wave', status: Error('added wave') } },
             statuses: {},
         })
@@ -201,20 +217,22 @@ describe('error', () => {
         const module = makeModule()
         const useState = makeUseState(module)
 
+        const getState = R.prop('getState', useState)
+
         module.add(useState, 'wave')
 
         await flushAsync()
 
         module.edit(useState, 'wave', 'tsunami')
 
-        expect(R.prop('state', module)).toEqual({
+        expect(getState()).toEqual({
             items: { t: { data: 'tsunami', status: 'editing' } },
             statuses: {},
         })
 
         await flushAsync()
 
-        expect(R.prop('state', module)).toEqual({
+        expect(getState()).toEqual({
             items: { t: { data: 'tsunami', status: Error('edited tsunami') } },
             statuses: {},
         })
@@ -224,20 +242,22 @@ describe('error', () => {
         const module = makeModule()
         const useState = makeUseState(module)
 
+        const getState = R.prop('getState', useState)
+
         module.add(useState, 'wave')
 
         await flushAsync()
 
         module.fetch(useState, 'tsunami')
 
-        expect(R.prop('state', module)).toEqual({
+        expect(getState()).toEqual({
             items: { w: { data: 'wave', status: Error('added wave') } },
             statuses: { i: { params: 'tsunami', status: 'fetching' } },
         })
 
         await flushAsync()
 
-        expect(R.prop('state', module)).toEqual({
+        expect(getState()).toEqual({
             items: { w: { data: 'wave', status: Error('added wave') } },
             statuses: {
                 i: { params: 'tsunami', status: Error('fetched tsunami') },
@@ -249,20 +269,22 @@ describe('error', () => {
         const module = makeModule()
         const useState = makeUseState(module)
 
+        const getState = R.prop('getState', useState)
+
         module.add(useState, 'wave')
 
         await flushAsync()
 
         module.refetch(useState, 'tsunami')
 
-        expect(R.prop('state', module)).toEqual({
+        expect(getState()).toEqual({
             items: { w: { data: 'wave', status: Error('added wave') } },
             statuses: { i: { params: 'tsunami', status: 'refetching' } },
         })
 
         await flushAsync()
 
-        expect(R.prop('state', module)).toEqual({
+        expect(getState()).toEqual({
             items: { w: { data: 'wave', status: Error('added wave') } },
             statuses: {
                 i: { params: 'tsunami', status: Error('refetched tsunami') },
@@ -274,20 +296,22 @@ describe('error', () => {
         const module = makeModule()
         const useState = makeUseState(module)
 
+        const getState = R.prop('getState', useState)
+
         module.add(useState, 'wave')
 
         await flushAsync()
 
         module.remove(useState, 'wave')
 
-        expect(R.prop('state', module)).toEqual({
+        expect(getState()).toEqual({
             items: { w: { data: 'wave', status: 'removing' } },
             statuses: {},
         })
 
         await flushAsync()
 
-        expect(R.prop('state', module)).toEqual({
+        expect(getState()).toEqual({
             items: { w: { data: 'wave', status: Error('removed wave') } },
             statuses: {},
         })
@@ -335,14 +359,14 @@ describe('tools', () => {
             )
         )
 
-        expect(
-            R.includes('test', R.keys(R.path(['state', 'items'], module)))
-        ).toEqual(true)
+        expect(R.includes('test', R.keys(R.prop('items', getState())))).toEqual(
+            true
+        )
 
         expect(
             R.includes(
                 'test',
-                R.keys(module.filterItems(R.path(['state', 'items'], module)))
+                R.keys(module.filterItems(R.prop('items', getState())))
             )
         ).toEqual(false)
     })
@@ -350,6 +374,8 @@ describe('tools', () => {
     test('group', async () => {
         const module = makeModule()
         const useState = makeUseState(module)
+
+        const getState = R.prop('getState', useState)
 
         module.add(useState, 'wave')
         module.add(useState, 'tsunami')
@@ -361,7 +387,7 @@ describe('tools', () => {
         expect(
             module.groupItems<string>(
                 R.pipe(R.prop('status'), String),
-                R.path(['state', 'items'], module)
+                R.prop('items', getState())
             )
         ).toEqual({
             adding: { tide: { data: 'tide', status: 'adding' } },
@@ -378,6 +404,8 @@ describe('tools', () => {
         const module = makeModule()
         const useState = makeUseState(module)
 
+        const getState = R.prop('getState', useState)
+
         module.add(useState, 'wave')
         module.add(useState, 'tsunami')
 
@@ -388,7 +416,7 @@ describe('tools', () => {
         expect(
             module.sortItems<string>(
                 R.prop('data'),
-                R.path(['state', 'items'], module)
+                R.prop('items', getState())
             )
         ).toEqual([
             { data: 'added tsunami', status: null },
