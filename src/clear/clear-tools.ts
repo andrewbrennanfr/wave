@@ -10,13 +10,11 @@ export const makeClear =
         const getState = R.prop('getState', useState)
         const setState = R.prop('setState', useState)
 
-        setTimeout(() => {
-            setState(
-                R.assoc(
-                    'items',
-                    R.reject(fn, filterItems(R.prop('items', getState()))),
-                    getState()
-                )
+        setState(
+            R.assoc(
+                'items',
+                R.reject(fn, filterItems(R.prop('items', getState()))),
+                getState()
             )
-        })
+        )
     }
