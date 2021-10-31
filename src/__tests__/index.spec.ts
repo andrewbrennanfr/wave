@@ -59,9 +59,14 @@ describe('success', () => {
 
         await flushAsync()
 
+        module.add(useState, 'tsunami')
+
         module.clear(useState, R.propEq('data', 'added wave'))
 
-        expect(R.prop('state', module)).toEqual({ items: {}, statuses: {} })
+        expect(R.prop('state', module)).toEqual({
+            items: { t: { data: 'tsunami', status: 'adding' } },
+            statuses: {},
+        })
     })
 
     test('edit', async () => {
