@@ -5,7 +5,7 @@ import { makeEdit } from '../edit/edit-tools'
 import { EditRequest } from '../edit/edit-types'
 import { makeFetch } from '../fetch/fetch-tools'
 import { FetchRequest } from '../fetch/fetch-types'
-import { groupItems, sortItems } from '../item/item-tools'
+import { filterItems, groupItems, sortItems } from '../item/item-tools'
 import { GetDataKey } from '../item/item-types'
 import { makeRefetch } from '../refetch/refetch-tools'
 import { RefetchRequest } from '../refetch/refetch-types'
@@ -35,6 +35,7 @@ export const makeModule = <D, P>(
     refetch: makeRefetch(getKeys, R.prop('refetch', requests)),
     remove: makeRemove(getKeys, R.prop('remove', requests)),
 
+    filterItems,
     groupItems,
     sortItems,
 

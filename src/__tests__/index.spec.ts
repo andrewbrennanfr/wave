@@ -2,6 +2,7 @@ import wave from '../'
 import { Module } from '../module/module-types'
 import { UseState } from '../state/state-types'
 import * as R from 'ramda'
+import { ImpartialItems } from '../item/item-types'
 
 //==============================================================================
 
@@ -311,6 +312,41 @@ describe('tools', () => {
             }
         )
 
+    test('filter', async () => {
+        const module = makeModule()
+        const useState = makeUseState(module)
+
+        const getState = R.prop('getState', useState)
+        const setState = R.prop('setState', useState)
+
+        module.add(useState, 'wave')
+
+        await flushAsync()
+
+        setState(
+            R.assoc(
+                'items',
+                R.assoc<undefined, Partial<ImpartialItems<string>>, 'test'>(
+                    'test',
+                    undefined,
+                    R.prop('items', getState())
+                ),
+                getState()
+            )
+        )
+
+        expect(
+            R.includes('test', R.keys(R.path(['state', 'items'], module)))
+        ).toEqual(true)
+
+        expect(
+            R.includes(
+                'test',
+                R.keys(module.filterItems(R.path(['state', 'items'], module)))
+            )
+        ).toEqual(false)
+    })
+
     test('group', async () => {
         const module = makeModule()
         const useState = makeUseState(module)
@@ -334,6 +370,8 @@ describe('tools', () => {
                 wave: { data: 'added wave', status: null },
             },
         })
+
+        await flushAsync()
     })
 
     test('sort', async () => {
@@ -357,5 +395,7 @@ describe('tools', () => {
             { data: 'added wave', status: null },
             { data: 'tide', status: 'adding' },
         ])
+
+        await flushAsync()
     })
 })
