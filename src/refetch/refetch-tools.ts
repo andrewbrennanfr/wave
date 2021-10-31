@@ -1,6 +1,5 @@
 import { makeItemFromData, makeAddItem } from '../item/item-tools'
 import { GetDataKey } from '../item/item-types'
-import { State } from '../state/state-types'
 import { makeStatusFromPartial, makeAddStatus } from '../status/status-tools'
 import { GetParamsKey } from '../status/status-types'
 import { RefetchAction, RefetchRequest } from './refetch-types'
