@@ -1,6 +1,6 @@
 {
     "name": "@andrewbrennanfr/wave",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "source": "src/index.ts",
     "main": "dist/wave.js",
     "types": "dist/index.d.ts",
