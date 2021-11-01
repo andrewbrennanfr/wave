@@ -1,5 +1,5 @@
 import wave from '../'
-import { ImpartialItems } from '../item/item-types'
+import { ImpartialItems, Item } from '../item/item-types'
 import { Module } from '../module/module-types'
 import { UseState } from '../state/state-types'
 import * as R from 'ramda'
@@ -385,8 +385,11 @@ describe('tools', () => {
         module.add(useState, 'tide')
 
         expect(
-            module.groupItems<string>(
-                R.pipe(R.prop('status'), String),
+            module.groupItems(
+                R.pipe<Item<string>, Item<string>['status'], string>(
+                    R.prop('status'),
+                    String
+                ),
                 R.prop('items', getState())
             )
         ).toEqual({
@@ -414,14 +417,17 @@ describe('tools', () => {
         module.add(useState, 'tide')
 
         expect(
-            module.sortItems<string>(
-                R.prop('data'),
+            module.sortItems(
+                R.pipe<Item<string>, Item<string>['status'], string>(
+                    R.prop('status'),
+                    String
+                ),
                 R.prop('items', getState())
             )
         ).toEqual([
-            { data: 'added tsunami', status: null },
-            { data: 'added wave', status: null },
             { data: 'tide', status: 'adding' },
+            { data: 'added wave', status: null },
+            { data: 'added tsunami', status: null },
         ])
 
         await flushAsync()

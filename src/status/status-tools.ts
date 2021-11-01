@@ -1,4 +1,5 @@
-import { GetParamsKey, Status, Statuses } from './status-types'
+import { GetKeys } from '../module/module-types'
+import { Status, Statuses } from './status-types'
 import * as R from 'ramda'
 
 //==============================================================================
@@ -19,9 +20,9 @@ export const makeStatusFromPartial = <P>(
 //==============================================================================
 
 export const makeAddStatus =
-    <P>(getKeys: {
-        getParamsKey: GetParamsKey<P>
-    }): ((status: Status<P>, statuses: Statuses<P>) => Statuses<P>) =>
+    <D, P>(
+        getKeys: GetKeys<D, P>
+    ): ((status: Status<P>, statuses: Statuses<P>) => Statuses<P>) =>
     (status, statuses) =>
         R.assoc(
             R.prop('getParamsKey', getKeys)(R.prop('params', status)),

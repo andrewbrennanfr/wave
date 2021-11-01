@@ -1,5 +1,6 @@
-import { GetDataKey, ImpartialItems, Item, Items } from './item-types'
+import { ImpartialItems, Item, Items } from './item-types'
 import * as R from 'ramda'
+import { GetKeys } from '../module/module-types'
 
 //==============================================================================
 
@@ -38,9 +39,9 @@ export const sortItems = <D>(
 //==============================================================================
 
 export const makeAddItem =
-    <D>(getKeys: {
-        getDataKey: GetDataKey<D>
-    }): ((item: Item<D>, items: Items<D>) => Items<D>) =>
+    <D, P>(
+        getKeys: GetKeys<D, P>
+    ): ((item: Item<D>, items: Items<D>) => Items<D>) =>
     (item, items) =>
         R.assoc(
             R.prop('getDataKey', getKeys)(R.prop('data', item)),
@@ -49,16 +50,16 @@ export const makeAddItem =
         )
 
 export const makeGetItem =
-    <D>(getKeys: {
-        getDataKey: GetDataKey<D>
-    }): ((data: D, items: Items<D>) => Item<D> | undefined) =>
+    <D, P>(
+        getKeys: GetKeys<D, P>
+    ): ((data: D, items: Items<D>) => Item<D> | undefined) =>
     (data, items) =>
         R.prop(R.prop('getDataKey', getKeys)(data), items)
 
 export const makeRemoveItem =
-    <D>(getKeys: {
-        getDataKey: GetDataKey<D>
-    }): ((item: Item<D>, items: Items<D>) => Items<D>) =>
+    <D, P>(
+        getKeys: GetKeys<D, P>
+    ): ((item: Item<D>, items: Items<D>) => Items<D>) =>
     (item, items) =>
         R.reject(
             R.pipe(

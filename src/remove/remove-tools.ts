@@ -1,9 +1,9 @@
 import {
-    makeItemFromPartial,
     makeAddItem,
+    makeItemFromPartial,
     makeRemoveItem,
 } from '../item/item-tools'
-import { GetDataKey } from '../item/item-types'
+import { GetKeys } from '../module/module-types'
 import { RemoveAction, RemoveRequest } from './remove-types'
 import * as R from 'ramda'
 
@@ -11,7 +11,7 @@ import * as R from 'ramda'
 
 export const makeRemove =
     <D, P>(
-        getKeys: { getDataKey: GetDataKey<D> },
+        getKeys: GetKeys<D, P>,
         request: RemoveRequest<D>
     ): RemoveAction<D, P> =>
     (useState, data) => {

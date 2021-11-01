@@ -1,20 +1,17 @@
 import {
+    makeAddItem,
     makeItemFromData,
     makeItemFromPartial,
-    makeAddItem,
     makeRemoveItem,
 } from '../item/item-tools'
-import { GetDataKey } from '../item/item-types'
+import { GetKeys } from '../module/module-types'
 import { AddAction, AddRequest } from './add-types'
 import * as R from 'ramda'
 
 //==============================================================================
 
 export const makeAdd =
-    <D, P>(
-        getKeys: { getDataKey: GetDataKey<D> },
-        request: AddRequest<D>
-    ): AddAction<D, P> =>
+    <D, P>(getKeys: GetKeys<D, P>, request: AddRequest<D>): AddAction<D, P> =>
     (useState, data) => {
         const addItem = makeAddItem(getKeys)
         const removeItem = makeRemoveItem(getKeys)
