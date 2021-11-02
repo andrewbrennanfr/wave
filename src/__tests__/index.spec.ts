@@ -1,5 +1,5 @@
 import wave from '../'
-import { ImpartialItems, Item } from '../item/item-types'
+import { Item, Items } from '../item/item-types'
 import { Module } from '../module/module-types'
 import { makeState, makeUseState } from '../state/state-tools'
 import { UseState } from '../state/state-types'
@@ -353,7 +353,7 @@ describe('tools', () => {
         setState(
             R.assoc(
                 'items',
-                R.assoc<undefined, Partial<ImpartialItems<string>>, 'test'>(
+                R.assoc<undefined, Items<string>, 'test'>(
                     'test',
                     undefined,
                     R.prop('items', getState())
