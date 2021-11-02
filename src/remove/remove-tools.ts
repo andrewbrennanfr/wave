@@ -4,6 +4,7 @@ import {
     makeRemoveItem,
 } from '../item/item-tools'
 import { GetKeys } from '../module/module-types'
+import { UseState } from '../state/state-types'
 import { RemoveAction, RemoveRequest } from './remove-types'
 import * as R from 'ramda'
 
@@ -11,10 +12,11 @@ import * as R from 'ramda'
 
 export const makeRemove =
     <D, P>(
+        useState: UseState<D, P>,
         getKeys: GetKeys<D, P>,
         request: RemoveRequest<D>
-    ): RemoveAction<D, P> =>
-    (useState, data) => {
+    ): RemoveAction<D> =>
+    (data) => {
         const addItem = makeAddItem(getKeys)
         const removeItem = makeRemoveItem(getKeys)
 

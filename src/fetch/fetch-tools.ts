@@ -1,6 +1,7 @@
 import { FetchAction, FetchRequest } from '../fetch/fetch-types'
 import { makeItemFromData, makeAddItem } from '../item/item-tools'
 import { GetKeys } from '../module/module-types'
+import { UseState } from '../state/state-types'
 import { makeStatusFromPartial, makeAddStatus } from '../status/status-tools'
 import * as R from 'ramda'
 
@@ -8,10 +9,11 @@ import * as R from 'ramda'
 
 export const makeFetch =
     <D, P>(
+        useState: UseState<D, P>,
         getKeys: GetKeys<D, P>,
         request: FetchRequest<D, P>
-    ): FetchAction<D, P> =>
-    (useState, params) => {
+    ): FetchAction<P> =>
+    (params) => {
         const addItem = makeAddItem(getKeys)
         const addStatus = makeAddStatus(getKeys)
 

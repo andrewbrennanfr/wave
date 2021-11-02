@@ -6,14 +6,19 @@ import {
     makeRemoveItem,
 } from '../item/item-tools'
 import { GetKeys } from '../module/module-types'
+import { UseState } from '../state/state-types'
 import { EditAction, EditRequest } from './edit-types'
 import * as R from 'ramda'
 
 //==============================================================================
 
 export const makeEdit =
-    <D, P>(getKeys: GetKeys<D, P>, request: EditRequest<D>): EditAction<D, P> =>
-    (useState, oldData, newData) => {
+    <D, P>(
+        useState: UseState<D, P>,
+        getKeys: GetKeys<D, P>,
+        request: EditRequest<D>
+    ): EditAction<D> =>
+    (oldData, newData) => {
         const addItem = makeAddItem(getKeys)
         const getItem = makeGetItem(getKeys)
         const removeItem = makeRemoveItem(getKeys)

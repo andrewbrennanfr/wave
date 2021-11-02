@@ -1,6 +1,6 @@
+import { GetKeys } from '../module/module-types'
 import { ImpartialItems, Item, Items } from './item-types'
 import * as R from 'ramda'
-import { GetKeys } from '../module/module-types'
 
 //==============================================================================
 

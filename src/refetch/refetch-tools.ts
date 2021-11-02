@@ -1,5 +1,6 @@
 import { makeItemFromData, makeAddItem } from '../item/item-tools'
 import { GetKeys } from '../module/module-types'
+import { UseState } from '../state/state-types'
 import { makeStatusFromPartial, makeAddStatus } from '../status/status-tools'
 import { RefetchAction, RefetchRequest } from './refetch-types'
 import * as R from 'ramda'
@@ -8,10 +9,11 @@ import * as R from 'ramda'
 
 export const makeRefetch =
     <D, P>(
+        useState: UseState<D, P>,
         getKeys: GetKeys<D, P>,
         request: RefetchRequest<D, P>
-    ): RefetchAction<D, P> =>
-    (useState, params) => {
+    ): RefetchAction<P> =>
+    (params) => {
         const addItem = makeAddItem(getKeys)
         const addStatus = makeAddStatus(getKeys)
 

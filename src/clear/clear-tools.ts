@@ -1,12 +1,13 @@
 import { filterItems } from '../item/item-tools'
+import { UseState } from '../state/state-types'
 import { ClearAction } from './clear-types'
 import * as R from 'ramda'
 
 //==============================================================================
 
 export const makeClear =
-    <D, P>(): ClearAction<D, P> =>
-    (useState, fn) => {
+    <D, P>(useState: UseState<D, P>): ClearAction<D> =>
+    (fn) => {
         const getState = R.prop('getState', useState)
         const setState = R.prop('setState', useState)
 
