@@ -1,6 +1,6 @@
 export type Status<P> = {
-    status: 'fetched' | 'fetching' | 'refetched' | 'refetching' | Error | null
     params: P
+    status: 'fetched' | 'fetching' | 'refetched' | 'refetching' | Error | null
 }
 
 export type GetParamsKey<P> = (params: P) => string
