@@ -14,7 +14,7 @@ export const makeStatusFromPartial = <P>(
 ): Status<P> =>
     R.mergeRight(
         makeStatusFromParams(R.prop('params', partial)),
-        R.omit(['params'], partial)
+        R.dissoc('params', partial)
     )
 
 //==============================================================================

@@ -14,7 +14,7 @@ export const makeItemFromPartial = <D>(
 ): Item<D> =>
     R.mergeRight(
         makeItemFromData(R.prop('data', partial)),
-        R.omit(['data'], partial)
+        R.dissoc('data', partial)
     )
 
 //==============================================================================
