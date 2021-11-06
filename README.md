@@ -26,9 +26,15 @@ the data's original source of truth (usually an API).
 Although originally built to be used with Vue, Wave is not dependent on any
 framework & can be integrated with existing state management tools quite easily.
 
-## 🤓 Demo
+## 🤓 Usage
 
-Coming soon... 👀
+Detailed usage instructions coming soon... 👀
+
+Demo:
+[https://andrewbrennanfr.github.io/wave/](https://andrewbrennanfr.github.io/wave/)
+
+Source:
+[https://github.com/andrewbrennanfr/wave/tree/demo](https://github.com/andrewbrennanfr/wave/tree/demo)
 
 ## 👨‍⚖️ License
 
