@@ -8,13 +8,12 @@ import {
 import { GetKeys } from '../module/module-types'
 import { UseState } from '../state/state-types'
 import { EditAction, EditRequest } from './edit-types'
-import * as R from 'ramda'
 
 //==============================================================================
 
 export const makeEdit =
     <D, P>(
-        useState: UseState<D, P>,
+        { getState, setState }: UseState<D, P>,
         getKeys: GetKeys<D, P>,
         request: EditRequest<D>
     ): EditAction<D> =>
@@ -23,55 +22,36 @@ export const makeEdit =
         const getItem = makeGetItem(getKeys)
         const removeItem = makeRemoveItem(getKeys)
 
-        const getState = R.prop('getState', useState)
-        const setState = R.prop('setState', useState)
-
         const oldItem =
-            getItem(oldData, R.prop('items', getState())) ||
-            makeItemFromData(oldData)
+            getItem(oldData, getState().items) || makeItemFromData(oldData)
 
         const newItem = makeItemFromPartial({
             data: newData,
             status: 'editing',
         })
 
-        setState(
-            R.assoc(
-                'items',
-                addItem(
-                    newItem,
-                    removeItem(oldItem, R.prop('items', getState()))
-                ),
-                getState()
-            )
-        )
+        setState({
+            items: addItem(newItem, removeItem(oldItem, getState().items)),
+        })
 
         request(oldData, newData)
             .then((newestData) => {
-                setState(
-                    R.assoc(
-                        'items',
-                        addItem(
-                            makeItemFromData(newestData),
-                            removeItem(newItem, R.prop('items', getState()))
-                        ),
-                        getState()
-                    )
-                )
+                setState({
+                    items: addItem(
+                        makeItemFromData(newestData),
+                        removeItem(newItem, getState().items)
+                    ),
+                })
             })
             .catch((error: any) => {
-                setState(
-                    R.assoc(
-                        'items',
-                        addItem(
-                            makeItemFromPartial({
-                                data: newData,
-                                status: Error(error),
-                            }),
-                            R.prop('items', getState())
-                        ),
-                        getState()
-                    )
-                )
+                setState({
+                    items: addItem(
+                        makeItemFromPartial({
+                            data: newData,
+                            status: Error(error),
+                        }),
+                        removeItem(newItem, getState().items)
+                    ),
+                })
             })
     }

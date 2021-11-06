@@ -12,14 +12,19 @@ import { makeRemove } from '../remove/remove-tools'
 import { RemoveRequest } from '../remove/remove-types'
 import { UseState } from '../state/state-types'
 import { GetKeys, Module } from './module-types'
-import * as R from 'ramda'
 
 //==============================================================================
 
 export const makeModule = <D, P>(
     useState: UseState<D, P>,
     getKeys: GetKeys<D, P>,
-    requests: {
+    {
+        add,
+        edit,
+        fetch,
+        refetch,
+        remove,
+    }: {
         add: AddRequest<D>
         edit: EditRequest<D>
         fetch: FetchRequest<D, P>
@@ -27,12 +32,12 @@ export const makeModule = <D, P>(
         remove: RemoveRequest<D>
     }
 ): Module<D, P> => ({
-    add: makeAdd(useState, getKeys, R.prop('add', requests)),
+    add: makeAdd(useState, getKeys, add),
     clear: makeClear(useState),
-    edit: makeEdit(useState, getKeys, R.prop('edit', requests)),
-    fetch: makeFetch(useState, getKeys, R.prop('fetch', requests)),
-    refetch: makeRefetch(useState, getKeys, R.prop('refetch', requests)),
-    remove: makeRemove(useState, getKeys, R.prop('remove', requests)),
+    edit: makeEdit(useState, getKeys, edit),
+    fetch: makeFetch(useState, getKeys, fetch),
+    refetch: makeRefetch(useState, getKeys, refetch),
+    remove: makeRemove(useState, getKeys, remove),
 
     filterItems,
     groupItems,

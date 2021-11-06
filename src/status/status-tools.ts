@@ -1,6 +1,5 @@
 import { GetKeys } from '../module/module-types'
 import { Status, Statuses } from './status-types'
-import * as R from 'ramda'
 
 //==============================================================================
 
@@ -9,23 +8,25 @@ export const makeStatusFromParams = <P>(params: P): Status<P> => ({
     status: null,
 })
 
-export const makeStatusFromPartial = <P>(
-    partial: Pick<Status<P>, 'params'> & Partial<Omit<Status<P>, 'params'>>
-): Status<P> =>
-    R.mergeRight(
-        makeStatusFromParams(R.prop('params', partial)),
-        R.dissoc('params', partial)
-    )
+export const makeStatusFromPartial = <P>({
+    params,
+    ...partial
+}: Pick<Status<P>, 'params'> &
+    Partial<Omit<Status<P>, 'params'>>): Status<P> => ({
+    ...makeStatusFromParams(params),
+    ...partial,
+})
 
 //==============================================================================
 
 export const makeAddStatus =
-    <D, P>(
-        getKeys: GetKeys<D, P>
-    ): ((status: Status<P>, statuses: Statuses<P>) => Statuses<P>) =>
-    (status, statuses) =>
-        R.assoc(
-            R.prop('getParamsKey', getKeys)(R.prop('params', status)),
-            status,
-            statuses
-        )
+    <D, P>({
+        getParamsKey,
+    }: GetKeys<D, P>): ((
+        status: Status<P>,
+        statuses: Statuses<P>
+    ) => Statuses<P>) =>
+    (status, statuses) => ({
+        ...statuses,
+        [getParamsKey(status.params)]: status,
+    })
