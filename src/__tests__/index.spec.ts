@@ -29,7 +29,7 @@ describe('success', () => {
             { getDataKey: head, getParamsKey: last },
             {
                 add: (data) => Promise.resolve(`added ${data}`),
-                edit: (_, newData) => Promise.resolve(`edited ${newData}`),
+                edit: (_, data) => Promise.resolve(`edited ${data}`),
                 fetch: (params) => Promise.resolve([`fetched ${params}`]),
                 refetch: (params) => Promise.resolve([`refetched ${params}`]),
                 remove: () => Promise.resolve(),
@@ -177,7 +177,7 @@ describe('error', () => {
             { getDataKey: head, getParamsKey: last },
             {
                 add: (data) => Promise.reject(`added ${data}`),
-                edit: (_, newData) => Promise.reject(`edited ${newData}`),
+                edit: (_, data) => Promise.reject(`edited ${data}`),
                 fetch: (params) => Promise.reject(`fetched ${params}`),
                 refetch: (params) => Promise.reject(`refetched ${params}`),
                 remove: (data) => Promise.reject(`removed ${data}`),

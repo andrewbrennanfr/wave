@@ -17,7 +17,7 @@ export const makeEdit =
         getKeys: GetKeys<D, P>,
         request: EditRequest<D>
     ): EditAction<D> =>
-    (oldData, newData) => {
+    (oldData, data) => {
         const addItem = makeAddItem(getKeys)
         const getItem = makeGetItem(getKeys)
         const removeItem = makeRemoveItem(getKeys)
@@ -25,32 +25,26 @@ export const makeEdit =
         const oldItem =
             getItem(oldData, getState().items) || makeItemFromData(oldData)
 
-        const newItem = makeItemFromPartial({
-            data: newData,
-            status: 'editing',
-        })
+        const item = makeItemFromPartial({ data, status: 'editing' })
 
         setState({
-            items: addItem(newItem, removeItem(oldItem, getState().items)),
+            items: addItem(item, removeItem(oldItem, getState().items)),
         })
 
-        request(oldData, newData)
-            .then((newestData) => {
+        request(oldData, data)
+            .then((newData) => {
                 setState({
                     items: addItem(
-                        makeItemFromData(newestData),
-                        removeItem(newItem, getState().items)
+                        makeItemFromData(newData),
+                        removeItem(item, getState().items)
                     ),
                 })
             })
             .catch((error: any) => {
                 setState({
                     items: addItem(
-                        makeItemFromPartial({
-                            data: newData,
-                            status: Error(error),
-                        }),
-                        removeItem(newItem, getState().items)
+                        makeItemFromPartial({ data, status: Error(error) }),
+                        removeItem(item, getState().items)
                     ),
                 })
             })
