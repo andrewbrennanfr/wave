@@ -7,8 +7,6 @@ import { GetKeys } from '../module/module-types'
 import { UseState } from '../state/state-types'
 import { RemoveAction, RemoveRequest } from './remove-types'
 
-//==============================================================================
-
 export const makeRemove =
     <D, P>(
         { getState, setState }: UseState<D, P>,

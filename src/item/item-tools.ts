@@ -15,8 +15,6 @@ import {
     values,
 } from 'ramda'
 
-//==============================================================================
-
 export const makeItemFromData = <D>(data: D): Item<D> => ({
     data,
     status: null,
@@ -29,8 +27,6 @@ export const makeItemFromPartial = <D>({
     ...makeItemFromData(data),
     ...partial,
 })
-
-//==============================================================================
 
 export const filterItems = <D>(items: Items<D>): ImpartialItems<D> =>
     filter(Boolean, items) as ImpartialItems<D>
@@ -46,13 +42,14 @@ export const sortItems = <D>(
     items: Items<D>
 ): Array<Item<D>> => sortBy(fn, values(filterItems(items)))
 
-//==============================================================================
-
 export const makeAddItem =
     <D, P>({
         getDataKey,
     }: GetKeys<D, P>): ((item: Item<D>, items: Items<D>) => Items<D>) =>
-    (item, items) => ({ ...items, [getDataKey(item.data)]: item })
+    ({ data, ...partial }, items) => ({
+        ...items,
+        [getDataKey(data)]: { ...partial, data },
+    })
 
 export const makeGetItem =
     <D, P>({

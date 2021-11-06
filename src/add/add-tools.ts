@@ -8,8 +8,6 @@ import { GetKeys } from '../module/module-types'
 import { UseState } from '../state/state-types'
 import { AddAction, AddRequest } from './add-types'
 
-//==============================================================================
-
 export const makeAdd =
     <D, P>(
         { getState, setState }: UseState<D, P>,

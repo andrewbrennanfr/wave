@@ -3,8 +3,6 @@ import { UseState } from '../state/state-types'
 import { ClearAction } from './clear-types'
 import { reject } from 'ramda'
 
-//==============================================================================
-
 export const makeClear =
     <D, P>({ getState, setState }: UseState<D, P>): ClearAction<D> =>
     (fn) => {

@@ -13,8 +13,6 @@ import { RemoveRequest } from '../remove/remove-types'
 import { UseState } from '../state/state-types'
 import { GetKeys, Module } from './module-types'
 
-//==============================================================================
-
 export const makeModule = <D, P>(
     useState: UseState<D, P>,
     getKeys: GetKeys<D, P>,

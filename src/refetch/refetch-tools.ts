@@ -5,8 +5,6 @@ import { makeStatusFromPartial, makeAddStatus } from '../status/status-tools'
 import { RefetchAction, RefetchRequest } from './refetch-types'
 import { map, reduceRight } from 'ramda'
 
-//==============================================================================
-
 export const makeRefetch =
     <D, P>(
         { getState, setState }: UseState<D, P>,

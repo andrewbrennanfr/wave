@@ -9,8 +9,6 @@ import { GetKeys } from '../module/module-types'
 import { UseState } from '../state/state-types'
 import { EditAction, EditRequest } from './edit-types'
 
-//==============================================================================
-
 export const makeEdit =
     <D, P>(
         { getState, setState }: UseState<D, P>,
@@ -24,7 +22,6 @@ export const makeEdit =
 
         const oldItem =
             getItem(oldData, getState().items) || makeItemFromData(oldData)
-
         const item = makeItemFromPartial({ data, status: 'editing' })
 
         setState({

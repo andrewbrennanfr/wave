@@ -5,8 +5,6 @@ import { UseState } from '../state/state-types'
 import { makeStatusFromPartial, makeAddStatus } from '../status/status-tools'
 import { map, reduceRight } from 'ramda'
 
-//==============================================================================
-
 export const makeFetch =
     <D, P>(
         { getState, setState }: UseState<D, P>,

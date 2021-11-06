@@ -1,8 +1,6 @@
 import { GetKeys } from '../module/module-types'
 import { Status, Statuses } from './status-types'
 
-//==============================================================================
-
 export const makeStatusFromParams = <P>(params: P): Status<P> => ({
     params,
     status: null,
@@ -17,8 +15,6 @@ export const makeStatusFromPartial = <P>({
     ...partial,
 })
 
-//==============================================================================
-
 export const makeAddStatus =
     <D, P>({
         getParamsKey,
@@ -26,7 +22,7 @@ export const makeAddStatus =
         status: Status<P>,
         statuses: Statuses<P>
     ) => Statuses<P>) =>
-    (status, statuses) => ({
+    ({ params, ...partial }, statuses) => ({
         ...statuses,
-        [getParamsKey(status.params)]: status,
+        [getParamsKey(params)]: { ...partial, params },
     })

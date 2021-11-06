@@ -2,9 +2,7 @@ import wave from '../'
 import { Module } from '../module/module-types'
 import { UseState } from '../state/state-types'
 import flushPromises from 'flush-promises'
-import { always, head, last, pipe, prop, propEq, split } from 'ramda'
-
-//==============================================================================
+import { always, has, head, last, pipe, prop, propEq, split } from 'ramda'
 
 const makeUseState = (): UseState<string, string> => {
     const state = { items: {}, statuses: {} }
@@ -17,8 +15,6 @@ const makeUseState = (): UseState<string, string> => {
         },
     }
 }
-
-//==============================================================================
 
 describe('success', () => {
     const makeModule = (
@@ -166,8 +162,6 @@ describe('success', () => {
     })
 })
 
-//==============================================================================
-
 describe('error', () => {
     const makeModule = (
         useState: UseState<string, string>
@@ -275,8 +269,6 @@ describe('error', () => {
     })
 })
 
-//==============================================================================
-
 describe('tools', () => {
     const makeModule = (
         useState: UseState<string, string>
@@ -308,10 +300,10 @@ describe('tools', () => {
             items: { ...useState.getState().items, test: undefined },
         })
 
-        expect(useState.getState().items.hasOwnProperty('test')).toEqual(true)
+        expect(has('test', useState.getState().items)).toEqual(true)
 
         expect(
-            module.filterItems(useState.getState().items).hasOwnProperty('test')
+            has('test', module.filterItems(useState.getState().items))
         ).toEqual(false)
     })
 

@@ -8,8 +8,6 @@ import { RefetchAction } from '../refetch/refetch-types'
 import { RemoveAction } from '../remove/remove-types'
 import { GetParamsKey } from '../status/status-types'
 
-//==============================================================================
-
 export type Module<D, P> = {
     add: AddAction<D>
     clear: ClearAction<D>
