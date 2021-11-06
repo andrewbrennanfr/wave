@@ -5,6 +5,11 @@
 An opinionated (& framework-agnostic 🤓) state management tool, built with
 TypeScript.
 
+![Version](https://img.shields.io/github/package-json/v/andrewbrennanfr/wave)
+![Downloads](https://img.shields.io/npm/dw/@andrewbrennanfr/wave)
+![License](https://img.shields.io/github/license/andrewbrennanfr/wave)
+![Keywords](https://img.shields.io/github/package-json/keywords/andrewbrennanfr/wave)
+
 ## 📦 Installation
 
 ```
